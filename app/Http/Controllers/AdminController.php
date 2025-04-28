@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Models\Pesanan;
 
 use Illuminate\Http\Request;
 
@@ -14,9 +15,11 @@ class AdminController extends Controller
     // Kelola Pesanan
     public function kelolaPesanan()
     {
-        // Ambil data pesanan dari model (misalnya: Order model)
-        // $orders = Order::all();
-        return view('admin.kelola');  // Pastikan view kelola ada di resources/views/admin/kelola.blade.php
+        // Ambil semua pesanan dari database
+        $pesanans = Pesanan::all();  // Mengambil semua pesanan
+
+        // Kirim data pesanan ke view
+        return view('admin.kelola', compact('pesanans'));  // Mengirim variabel pesanans ke view
     }
 
     // Riwayat Keuangan

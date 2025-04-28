@@ -20,10 +20,12 @@ class Pesanan extends Model
     ];
     
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    // App\Models\Pesanan.php
+
+public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 
     public function transaksi()
     {

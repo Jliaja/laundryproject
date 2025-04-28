@@ -84,18 +84,32 @@
         </thead>
         <tbody>
           <!-- Loop untuk menampilkan pesanan -->
-          <tr>
-            <td>1</td>
-            <td>John Doe</td>
-            <td>Menunggu Pembayaran</td>
-            <td><button>Proses</button></td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Jane Smith</td>
-            <td>Diproses</td>
-            <td><button>Proses</button></td>
-          </tr>
+          @foreach($pesanans as $pesanan)
+  <tr>
+    <td>{{ $loop->iteration }}</td>
+    <td>{{ $pesanan->nama_pelanggan }}</td>
+    <td>{{ $pesanan->status }}</td>
+    <td>
+      <!-- Form untuk update status pesanan -->
+      <form action="{{ route('admin.pesanan.update', $pesanan->id) }}" method="POST">
+        @csrf
+        @method('PUT')
+        
+        <label for="status">Status:</label>
+        <select name="status" id="status">
+            <option value="pending" {{ $pesanan->status == 'pending' ? 'selected' : '' }}>Pending</option>
+            <option value="proses" {{ $pesanan->status == 'proses' ? 'selected' : '' }}>Proses</option>
+            <option value="selesai" {{ $pesanan->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
+            <option value="batal" {{ $pesanan->status == 'batal' ? 'selected' : '' }}>Batal</option>
+        </select>
+        
+        <button type="submit">Ubah Status</button>
+    </form>
+    
+    </td>
+  </tr>
+@endforeach
+
         </tbody>
       </table>
     </div>

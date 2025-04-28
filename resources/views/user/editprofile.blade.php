@@ -83,7 +83,7 @@
 <body>
 
   <div class="container">
-    <h2>👤 Edit Profil</h2>
+    <h2>Edit Profil</h2>
 
     <form action="{{ route('user.profile.update') }}" method="POST" enctype="multipart/form-data">
       @csrf

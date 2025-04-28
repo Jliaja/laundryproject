@@ -96,7 +96,7 @@
 <body>
 
   <div class="container">
-    <h2>👤 Profil Saya</h2>
+    <h2>Profil Saya</h2>
 
     <!-- Foto Profil -->
     <div class="profile-picture">
@@ -114,8 +114,8 @@
     </div>
 
     <div class="link-group">
-      <a href="{{ route('user.profile.edit') }}" class="back-link">✏️ Edit Profil</a>
-      <a href="{{ route('user.dashboard') }}" class="back-link">⬅ Kembali ke Dashboard</a>
+      <a href="{{ route('user.profile.edit') }}" class="back-link">Edit Profil</a>
+      <a href="{{ route('user.dashboard') }}" class="back-link">Kembali ke Dashboard</a>
     </div>
   </div>
 

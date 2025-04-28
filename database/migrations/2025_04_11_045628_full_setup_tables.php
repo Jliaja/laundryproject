@@ -21,7 +21,8 @@ return new class extends Migration
             $table->text('address')->nullable(); // Menambahkan kolom address
             $table->string('profile_picture')->nullable(); // Menambahkan kolom profile_picture
             $table->string('password');
-            $table->enum('role', ['admin', 'user'])->default('user');
+            $table->enum('role', ['admin', 'user'])->default('user'); // Menambahkan kolom role
+            $table->boolean('is_admin')->default(false); // Menambahkan kolom is_admin
             $table->timestamps();
         });
 

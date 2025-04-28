@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pesanan; // Pastikan sudah import model Pesanan
+use App\Models\Pesanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,7 +42,7 @@ class PesananController extends Controller
             'layanan' => $request->layanan,
             'jumlah' => $request->jumlah,
             'tanggal' => $request->tanggal,
-            'status' => 'pending',
+            'status' => 'pending',  // Status default adalah 'pending'
         ]);
 
         // Redirect ke halaman konfirmasi
@@ -69,31 +69,59 @@ class PesananController extends Controller
      * Menampilkan daftar pesanan user.
      */
     public function daftarpesanan()
+{
+    $userId = Auth::id(); // Ambil ID user yang login
+    // Ambil data pesanan untuk user yang login
+    $pesanan = Pesanan::where('user_id', $userId)->get();
+    return view('user.daftarpesanan', compact('pesanan'));
+}
+
+    /**
+     * Mengubah status pesanan oleh admin.
+     */
+    public function ubahStatus($id)
     {
-        // Cek apakah user login
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        // Cek apakah user adalah admin
+        if (!Auth::check() || Auth::user()->role != 'admin') {
+            return redirect()->route('login')->with('error', 'Hanya admin yang bisa mengubah status pesanan.');
         }
 
-        // Ambil data pesanan user yang sedang login
-        $pesanan = Pesanan::where('user_id', Auth::id())  // Menggunakan model Pesanan
-                          ->orderBy('created_at', 'desc')  // Urutkan berdasarkan waktu pesanan
-                          ->get();
+        // Cari pesanan berdasarkan ID
+        $pesanan = Pesanan::find($id);
 
-        return view('user.daftarpesanan', compact('pesanan'));
+        if (!$pesanan) {
+            return redirect()->route('admin.kelola')->with('error', 'Pesanan tidak ditemukan.');
+        }
+
+        // Ubah status pesanan
+        $pesanan->status = 'proses'; // Atau status lain sesuai kebutuhan
+        $pesanan->save();
+
+        return redirect()->route('admin.kelola')->with('success', 'Status pesanan berhasil diubah!');
     }
 
     /**
-     * Menampilkan riwayat pesanan user.
+     * Mengupdate status pesanan
      */
-    public function history()
+    public function update(Request $request, $id)
     {
-        // Ambil id user yang sedang login
-        $userId = Auth::id();
-        $pesanans = Pesanan::where('user_id', $userId)
-                           ->orderBy('tanggal', 'desc')
-                           ->get();
-        
-        return view('user.historypesanan', compact('pesanans'));
+        // Cari pesanan berdasarkan ID
+        $pesanan = Pesanan::find($id);
+
+        if (!$pesanan) {
+            return redirect()->route('admin.kelola')->with('error', 'Pesanan tidak ditemukan.');
+        }
+
+        // Validasi status yang dikirim
+        $request->validate([
+            'status' => 'required|string|in:pending,proses,selesai,batal', // Status yang valid
+        ]);
+
+        // Update status pesanan
+        $pesanan->status = $request->status; // Mengambil status dari form
+        $pesanan->save();
+
+        // Redirect ke halaman kelola dengan pesan sukses
+        return redirect()->route('admin.kelola')->with('success', 'Status pesanan berhasil diperbarui.');
     }
 }

@@ -27,6 +27,11 @@ class User extends Authenticatable
         return 'username'; // Ganti dari 'email' ke 'username'
     }
     protected $primaryKey = 'id';  // Pastikan ini tidak diubah atau di-set ke kolom lain
+    public function pesanan()
+{
+    return $this->hasMany(Pesanan::class);
+}
+
     
 }
 

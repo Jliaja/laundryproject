@@ -72,6 +72,7 @@ Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/kelola', [AdminController::class, 'kelolaPesanan'])->name('kelola');
     Route::get('/transaksi', [AdminController::class, 'riwayatKeuangan'])->name('transaksi');
+    Route::put('/pesanan/update/{id}', [PesananController::class, 'update'])->name('pesanan.update');
 });
 
 
