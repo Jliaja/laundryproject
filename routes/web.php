@@ -14,6 +14,7 @@ use App\Http\Middleware\CekLogin;
 Route::get('/', function () {
     return view('welcome');
 });
+
 // Route untuk login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
@@ -21,10 +22,8 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Route untuk dashboard (hanya bisa diakses setelah login)
 Route::middleware(['auth'])->group(function () {
-    // Dashboard
-    Route::get('/dashboard', function () {
-        return view('user.dashboard');
-    })->name('user.dashboard');
+    // Dashboard Pengguna
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('user.dashboard');
     
     // Ganti Password
     Route::get('/ganti-password', [UserController::class, 'gantiPasswordForm'])->name('user.password.form');
@@ -33,23 +32,19 @@ Route::middleware(['auth'])->group(function () {
     // Pesanan
     Route::get('/buatpesanan', [PesananController::class, 'create'])->name('user.buatpesanan');
     Route::post('/buatpesanan', [PesananController::class, 'store'])->name('user.storepesanan');
-    Route::get('/daftarpesanan', [PesananController::class, 'daftarpesanan'])->name('user.daftarpesanan');
+    Route::get('daftarpesanan', [PesananController::class, 'daftarpesanan'])->name('user.daftarpesanan');
     Route::get('/confirmpesanan/{id}', [PesananController::class, 'confirm'])->name('user.confirmpesanan');
     Route::get('/riwayatpesanan', [PesananController::class, 'history'])->name('user.historypesanan');
 
-    // Tampilkan profil pengguna
+    // Profil Pengguna
     Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
-    
-    // Tampilkan halaman edit profil
     Route::get('/user/profile/edit', [UserController::class, 'editProfile'])->name('user.profile.edit');
-    
-    // Proses pembaruan profil
     Route::put('/user/profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
-     // Ganti Password (Jika diperlukan)
-     Route::get('/user/change-password', [UserController::class, 'showChangePasswordForm'])->name('user.change-password');
-     Route::post('/user/change-password', [UserController::class, 'changePassword'])->name('user.change-password.update');
-});
 
+    // Ganti Password (Jika diperlukan)
+    Route::get('/user/change-password', [UserController::class, 'showChangePasswordForm'])->name('user.change-password');
+    Route::post('/user/change-password', [UserController::class, 'changePassword'])->name('user.change-password.update');
+});
 
 // Route untuk register
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
@@ -74,6 +69,3 @@ Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->
     Route::get('/transaksi', [AdminController::class, 'riwayatKeuangan'])->name('transaksi');
     Route::put('/pesanan/update/{id}', [PesananController::class, 'update'])->name('pesanan.update');
 });
-
-
-

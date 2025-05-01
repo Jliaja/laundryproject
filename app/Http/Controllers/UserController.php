@@ -10,60 +10,57 @@ use App\Models\User;
 
 class UserController extends Controller
 {
-    // Tampilkan halaman profil (hanya lihat)
+    /**
+     * Tampilkan halaman profil.
+     */
     public function profile()
     {
         $user = Auth::user();
-        return view('user.profile', compact('user')); // tampilkan data user
+        return view('user.profile', compact('user'));
     }
 
-    // Tampilkan halaman edit profil
+    /**
+     * Tampilkan halaman edit profil.
+     */
     public function editProfile()
     {
         $user = Auth::user();
-        return view('user.editprofile', compact('user')); // view khusus untuk edit
+        return view('user.editprofile', compact('user'));
     }
 
-    // Proses update profil
+    /**
+     * Proses update profil user.
+     */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
 
-        // Validasi input
         $request->validate([
-            'address' => 'nullable|string|max:255',  // Sesuaikan dengan kolom address
+            'address' => 'nullable|string|max:255',
             'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|min:6|confirmed',  // Validasi password jika diubah
+            'password' => 'nullable|min:6|confirmed',
         ]);
 
-        // Update alamat
-        $user->address = $request->address;  // Sesuaikan dengan kolom address
+        $user->address = $request->address;
+        $user->email = $request->email;
 
-        // Handle foto profil
+        // Update foto profil jika ada
         if ($request->hasFile('profile_picture')) {
-            // Hapus gambar lama jika ada
             if ($user->profile_picture && Storage::exists('public/' . $user->profile_picture)) {
                 Storage::delete('public/' . $user->profile_picture);
             }
-
-            // Simpan gambar baru
             $path = $request->file('profile_picture')->store('profile_pictures', 'public');
             $user->profile_picture = $path;
         }
-
-        // Update email
-        $user->email = $request->email;
 
         // Update password jika diisi
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
 
-        // Simpan perubahan ke database
-        $user->save();  // Pastikan ini dipanggil untuk menyimpan perubahan
+        $user->save();
 
-        // Redirect kembali ke halaman edit dengan pesan sukses
         return redirect()->route('user.profile.edit')->with('success', 'Profil berhasil diperbarui!');
     }
 }

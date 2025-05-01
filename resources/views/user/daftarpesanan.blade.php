@@ -24,6 +24,7 @@
         .user-info {
             text-align: center;
             margin-bottom: 20px;
+            display: none;  /* Menyembunyikan elemen user-info */
         }
         .pesanan-list {
             list-style-type: none;
@@ -56,19 +57,18 @@
 
     <h1>Daftar Pesanan</h1>
 
-    <!-- Menampilkan pesan sukses jika ada -->
     @if(session('success'))
         <div class="success-message">
             {{ session('success') }}
         </div>
     @endif
 
+    <!-- Bagian ini disembunyikan -->
     <div class="user-info">
         <p><strong>Username:</strong> {{ Auth::user()->username }}</p>
         <p><strong>Jumlah Pesanan:</strong> {{ $pesanan->count() }}</p>
     </div>
 
-    <!-- Cek apakah pesanan kosong atau tidak -->
     @if($pesanan->isEmpty())
         <p style="text-align: center;">Tidak ada pesanan ditemukan.</p>
     @else

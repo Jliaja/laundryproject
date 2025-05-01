@@ -70,6 +70,13 @@
     .back-link:hover {
       text-decoration: underline;
     }
+
+    .total-price {
+      font-size: 18px;
+      font-weight: bold;
+      color: #27ae60;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -82,10 +89,10 @@
         <label for="layanan">Layanan</label>
         <select id="layanan" name="layanan" required>
           <option value="">-- Pilih Layanan --</option>
-          <option value="Cuci Kering">Cuci Kering</option>
-          <option value="Cuci Basah">Cuci Basah</option>
-          <option value="Setrika">Setrika</option>
-          <option value="Lengkap (Cuci + Setrika)">Lengkap (Cuci + Setrika)</option>
+          <option value="Cuci Kering" data-harga="5000">Cuci Kering</option>
+          <option value="Cuci Basah" data-harga="6000">Cuci Basah</option>
+          <option value="Setrika" data-harga="4000">Setrika</option>
+          <option value="Lengkap (Cuci + Setrika)" data-harga="8000">Lengkap (Cuci + Setrika)</option>
         </select>
       
         <label for="jumlah">Jumlah (kg)</label>
@@ -93,6 +100,10 @@
       
         <label for="tanggal">Tanggal</label>
         <input type="date" id="tanggal" name="tanggal" required>
+        
+        <div class="total-price">
+          Total Harga: Rp <span id="total-harga">0</span>
+        </div>
       
         <button type="submit">Kirim Pesanan</button>
       </form>
@@ -101,6 +112,23 @@
 
     <a class="back-link" href="{{ route('user.dashboard') }}">← Kembali ke Dashboard</a>
   </div>
+
+  <script>
+    // Update harga total saat memilih layanan atau jumlah kg
+    document.getElementById('layanan').addEventListener('change', updateTotal);
+    document.getElementById('jumlah').addEventListener('input', updateTotal);
+
+    function updateTotal() {
+      var layanan = document.getElementById('layanan');
+      var jumlah = document.getElementById('jumlah').value;
+      var hargaPerKg = layanan.options[layanan.selectedIndex].getAttribute('data-harga');
+      
+      if (jumlah && hargaPerKg) {
+        var total = hargaPerKg * jumlah;
+        document.getElementById('total-harga').textContent = total.toLocaleString();
+      }
+    }
+  </script>
 
 </body>
 </html>

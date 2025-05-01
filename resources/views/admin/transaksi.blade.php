@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Kelola Transaksi</title>
   <style>
-    /* Tambahkan gaya yang diinginkan di sini */
     body {
       background: #f1f5f9;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -62,6 +61,19 @@
       background-color: #4ac6e8;
       color: white;
     }
+
+    .filter-form {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .filter-form select, .filter-form input {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
   </style>
 </head>
 <body>
@@ -73,6 +85,27 @@
   <div class="content">
     <div class="card">
       <h1>Riwayat Transaksi</h1>
+
+      <!-- Filter Form -->
+      <form class="filter-form" method="GET" action="{{ route('admin.transaksi') }}">
+        <div>
+          <label for="filter">Filter Berdasarkan:</label>
+          <select name="filter" id="filter">
+            <option value="bulan">Per Bulan</option>
+            <option value="minggu">Per Minggu</option>
+            <option value="tahun">Per Tahun</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="tanggal">Pilih Tanggal:</label>
+          <input type="date" name="tanggal" id="tanggal">
+        </div>
+
+        <button type="submit">Terapkan Filter</button>
+      </form>
+
+      <!-- Table untuk Menampilkan Riwayat Transaksi -->
       <table>
         <thead>
           <tr>
@@ -80,27 +113,21 @@
             <th>Nama Pembeli</th>
             <th>Total Transaksi</th>
             <th>Status Pembayaran</th>
-            
           </tr>
         </thead>
         <tbody>
           <!-- Loop untuk menampilkan transaksi -->
-          <tr>
-            <td>1</td>
-            <td>John Doe</td>
-            <td>Rp 200.000</td>
-            <td>Lunas</td>
-            
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Jane Smith</td>
-            <td>Rp 150.000</td>
-            <td>Belum Lunas</td>
-            
-          </tr>
+          @foreach ($transactions as $transaction)
+            <tr>
+              <td>{{ $loop->iteration }}</td>
+              <td>{{ $transaction->nama_pembeli }}</td>
+              <td>Rp {{ number_format($transaction->total, 0, ',', '.') }}</td>
+              <td>{{ $transaction->status_pembayaran }}</td>
+            </tr>
+          @endforeach
         </tbody>
       </table>
+
     </div>
   </div>
 

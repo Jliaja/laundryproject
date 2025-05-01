@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -8,13 +9,8 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'username', 'email', 'password', 'role', 'address', 
+        'username', 'email', 'password', 'role', 'address',
     ];
 
     /**
@@ -26,13 +22,14 @@ class User extends Authenticatable
     {
         return 'username'; // Ganti dari 'email' ke 'username'
     }
-    protected $primaryKey = 'id';  // Pastikan ini tidak diubah atau di-set ke kolom lain
+
+    protected $primaryKey = 'id';  // Pastikan 'id' adalah primary key
+    protected $keyType = 'int';    // Pastikan key type adalah integer
+    public $incrementing = true;   // Pastikan incrementing diatur ke true
+
+    // Relasi dengan Pesanan
     public function pesanan()
-{
-    return $this->hasMany(Pesanan::class);
+    {
+        return $this->hasMany(Pesanan::class);
+    }
 }
-
-    
-}
-
-

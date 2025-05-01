@@ -17,111 +17,98 @@ class PesananController extends Controller
     }
 
     /**
-     * Simpan data pesanan ke database.
+     * Simpan pesanan baru ke database.
      */
     public function store(Request $request)
     {
-        // Cek apakah user login
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
         $user = Auth::user();
 
-        // Validasi data input
         $request->validate([
             'layanan' => 'required|string',
-            'jumlah' => 'required|numeric',
+            'jumlah' => 'required|numeric|min:1',
             'tanggal' => 'required|date',
         ]);
 
-        // Simpan pesanan menggunakan model Pesanan
+        $hargaPerKg = [
+            'Cuci Kering' => 5000,
+            'Cuci Basah' => 6000,
+            'Setrika' => 4000,
+            'Lengkap (Cuci + Setrika)' => 8000
+        ];
+
+        $layanan = $request->input('layanan');
+        $jumlah = $request->input('jumlah');
+        $totalHarga = $hargaPerKg[$layanan] * $jumlah;
+
         $pesanan = Pesanan::create([
             'user_id' => $user->id,
             'nama_pelanggan' => $user->username,
-            'layanan' => $request->layanan,
-            'jumlah' => $request->jumlah,
+            'layanan' => $layanan,
+            'jumlah' => $jumlah,
             'tanggal' => $request->tanggal,
-            'status' => 'pending',  // Status default adalah 'pending'
+            'total_harga' => $totalHarga,
+            'status' => 'pending',
+            'status_pembayaran' => 'Lunas',
         ]);
 
-        // Redirect ke halaman konfirmasi
         return redirect()->route('user.confirmpesanan', ['id' => $pesanan->id])
-                         ->with('success', 'Pesanan berhasil dibuat!');
+                         ->with('success', 'Pesanan berhasil dibuat dan dibayar!');
     }
 
     /**
-     * Menampilkan detail konfirmasi pesanan.
+     * Tampilkan halaman konfirmasi pesanan.
      */
     public function confirm($id)
     {
-        // Ambil data pesanan menggunakan model Pesanan
-        $pesanan = Pesanan::find($id);
-
-        if (!$pesanan) {
-            abort(404, 'Pesanan tidak ditemukan.');
-        }
-
+        $pesanan = Pesanan::findOrFail($id);
         return view('user.confirmpesanan', compact('pesanan'));
     }
 
     /**
-     * Menampilkan daftar pesanan user.
+     * Tampilkan daftar pesanan milik user yang login.
      */
     public function daftarpesanan()
-{
-    $userId = Auth::id(); // Ambil ID user yang login
-    // Ambil data pesanan untuk user yang login
-    $pesanan = Pesanan::where('user_id', $userId)->get();
-    return view('user.daftarpesanan', compact('pesanan'));
-}
+    {
+        $user = Auth::user(); // Mendapatkan data user yang sedang login
+
+        $pesanan = Pesanan::where('user_id', $user->id)->get(); // Ambil pesanan milik user tersebut
+
+        return view('user.daftarpesanan', compact('pesanan'));
+    }
 
     /**
-     * Mengubah status pesanan oleh admin.
+     * Ubah status pesanan oleh admin.
      */
     public function ubahStatus($id)
     {
-        // Cek apakah user adalah admin
-        if (!Auth::check() || Auth::user()->role != 'admin') {
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
             return redirect()->route('login')->with('error', 'Hanya admin yang bisa mengubah status pesanan.');
         }
 
-        // Cari pesanan berdasarkan ID
-        $pesanan = Pesanan::find($id);
-
-        if (!$pesanan) {
-            return redirect()->route('admin.kelola')->with('error', 'Pesanan tidak ditemukan.');
-        }
-
-        // Ubah status pesanan
-        $pesanan->status = 'proses'; // Atau status lain sesuai kebutuhan
+        $pesanan = Pesanan::findOrFail($id);
+        $pesanan->status = 'proses';
         $pesanan->save();
 
         return redirect()->route('admin.kelola')->with('success', 'Status pesanan berhasil diubah!');
     }
 
     /**
-     * Mengupdate status pesanan
+     * Update status pesanan oleh admin.
      */
     public function update(Request $request, $id)
     {
-        // Cari pesanan berdasarkan ID
-        $pesanan = Pesanan::find($id);
-
-        if (!$pesanan) {
-            return redirect()->route('admin.kelola')->with('error', 'Pesanan tidak ditemukan.');
-        }
-
-        // Validasi status yang dikirim
         $request->validate([
-            'status' => 'required|string|in:pending,proses,selesai,batal', // Status yang valid
+            'status' => 'required|string|in:pending,proses,selesai,batal',
         ]);
 
-        // Update status pesanan
-        $pesanan->status = $request->status; // Mengambil status dari form
+        $pesanan = Pesanan::findOrFail($id);
+        $pesanan->status = $request->status;
         $pesanan->save();
 
-        // Redirect ke halaman kelola dengan pesan sukses
         return redirect()->route('admin.kelola')->with('success', 'Status pesanan berhasil diperbarui.');
     }
 }

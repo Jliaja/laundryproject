@@ -23,10 +23,36 @@ class AdminController extends Controller
     }
 
     // Riwayat Keuangan
-    public function riwayatKeuangan()
-    {
-        // Ambil data transaksi keuangan dari model (misalnya: Transaction model)
-        // $transactions = Transaction::all();
-        return view('admin.transaksi');  // Pastikan view transaksi ada di resources/views/admin/transaksi.blade.php
+    public function riwayatKeuangan(Request $request)
+{
+    $filter = $request->input('filter', 'bulan'); // Default 'bulan' jika tidak ada filter
+    $tanggal = $request->input('tanggal');
+
+    // Query dasar untuk mengambil transaksi
+    $query = Pesanan::where('status_pembayaran', 'Lunas'); // Hanya transaksi yang sudah lunas
+
+    if ($filter && $tanggal) {
+        if ($filter == 'bulan') {
+            // Filter berdasarkan bulan
+            $query->whereMonth('created_at', Carbon::parse($tanggal)->month)
+                  ->whereYear('created_at', Carbon::parse($tanggal)->year);
+        } elseif ($filter == 'minggu') {
+            // Filter berdasarkan minggu
+            $query->whereBetween('created_at', [
+                Carbon::parse($tanggal)->startOfWeek(),
+                Carbon::parse($tanggal)->endOfWeek(),
+            ]);
+        } elseif ($filter == 'tahun') {
+            // Filter berdasarkan tahun
+            $query->whereYear('created_at', Carbon::parse($tanggal)->year);
+        }
     }
+
+    // Ambil data transaksi yang sudah difilter
+    $transactions = $query->get();
+
+    // Kirim data ke view
+    return view('admin.transaksi', compact('transactions'));
+}
+
 }

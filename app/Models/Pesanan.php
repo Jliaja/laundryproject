@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,7 +9,7 @@ class Pesanan extends Model
 {
     use HasFactory;
 
-    protected $table = 'pesanans'; // <-- Tambahkan ini
+    protected $table = 'pesanans'; // Nama tabel dalam database
 
     protected $fillable = [
         'user_id',
@@ -18,15 +19,14 @@ class Pesanan extends Model
         'tanggal',
         'status',
     ];
-    
 
-    // App\Models\Pesanan.php
+    // Relasi dengan User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
-public function user()
-{
-    return $this->belongsTo(User::class, 'user_id');
-}
-
+    // Relasi dengan Transaksi
     public function transaksi()
     {
         return $this->hasOne(Transaksi::class);
