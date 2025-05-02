@@ -4,110 +4,148 @@
   <meta charset="UTF-8">
   <title>Dashboard Admin</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-    body {
-      background: linear-gradient(to right, #4ac6e8, #a1e0f3);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
+  body {
+    background: #f5f8fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2c3e50;
+  }
 
-    .navbar {
-      background-color: #fff;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+  .navbar {
+    background-color: #ffffff;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid #eaeaea;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
 
-    .navbar div {
-      font-size: 18px;
-      font-weight: bold;
-      color: #333;
-    }
+  .navbar div {
+    font-size: 20px;
+    font-weight: 600;
+    color: #34495e;
+  }
 
-    .logout-form {
-      display: inline;
-    }
+  .logout-form {
+    display: inline;
+  }
 
-    .logout-btn {
-      background-color: #e74c3c;
-      color: white;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+  .logout-btn {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
 
-    .logout-btn:hover {
-      background-color: #c0392b;
-    }
+  .logout-btn:hover {
+    background-color: #c0392b;
+  }
 
-    .content {
-      padding: 40px 20px;
-      max-width: 900px;
-      margin: auto;
-    }
+  .content {
+    padding: 40px 20px;
+    max-width: 960px;
+    margin: auto;
+  }
 
-    .card {
-      background-color: #ffffffd9;
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      margin-bottom: 30px;
-      transition: transform 0.2s ease;
-    }
+  .card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 35px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+  }
 
-    .card:hover {
-      transform: scale(1.02);
-    }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+  }
 
-    h1, h3 {
-      margin: 0 0 15px 0;
-      color: #2c3e50;
-    }
+  h1, h3 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+  }
 
-    ul {
-      padding-left: 20px;
-    }
+  p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555;
+  }
 
-    li {
-      margin-bottom: 8px;
-      font-size: 16px;
-    }
+  ul {
+    padding-left: 20px;
+    list-style: none;
+  }
 
-    .emoji {
-      margin-right: 6px;
-    }
+  li {
+    margin-bottom: 10px;
+    font-size: 16px;
+    position: relative;
+    padding-left: 25px;
+    color: #444;
+  }
 
+  li::before {
+    content: '✔️';
+    position: absolute;
+    left: 0;
+    top: 1px;
+  }
+
+  .button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 30px;
+  }
+
+  .action-btn {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    min-width: 180px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .action-btn:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 600px) {
     .button-container {
-      display: flex;
-      gap: 20px;
-      margin-top: 30px;
+      flex-direction: column;
+      align-items: center;
     }
 
     .action-btn {
-      background-color: #3498db;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
+      width: 100%;
       text-align: center;
     }
+  }
+</style>
 
-    .action-btn:hover {
-      background-color: #2980b9;
-    }
   </style>
 </head>
 <body>
@@ -137,7 +175,7 @@
     <!-- Menambahkan tombol navigasi ke halaman Kelola Pesanan dan Kelola Transaksi -->
     <div class="button-container">
       <a href="{{ route('admin.kelola') }}" class="action-btn">Kelola Pesanan</a>
-      <a href="{{ route('admin.transaksi') }}" class="action-btn">Kelola Transaksi</a>
+      <a href="{{ route('admin.keuangan') }}" class="action-btn">Kelola Keuangan</a>
     </div>
   </div>
 

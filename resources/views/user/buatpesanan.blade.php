@@ -84,48 +84,69 @@
   <div class="container">
     <h2>Form Buat Pesanan</h2>
     <form action="{{ route('user.buatpesanan') }}" method="POST">
-        @csrf
-      
-        <label for="layanan">Layanan</label>
-        <select id="layanan" name="layanan" required>
-          <option value="">-- Pilih Layanan --</option>
-          <option value="Cuci Kering" data-harga="5000">Cuci Kering</option>
-          <option value="Cuci Basah" data-harga="6000">Cuci Basah</option>
-          <option value="Setrika" data-harga="4000">Setrika</option>
-          <option value="Lengkap (Cuci + Setrika)" data-harga="8000">Lengkap (Cuci + Setrika)</option>
-        </select>
-      
-        <label for="jumlah">Jumlah (kg)</label>
-        <input type="number" id="jumlah" name="jumlah" min="1" step="0.1" required>
-      
-        <label for="tanggal">Tanggal</label>
-        <input type="date" id="tanggal" name="tanggal" required>
-        
-        <div class="total-price">
-          Total Harga: Rp <span id="total-harga">0</span>
-        </div>
-      
-        <button type="submit">Kirim Pesanan</button>
-      </form>
-      
+      @csrf
 
+      <label for="layanan">Layanan</label>
+      <select id="layanan" name="layanan" required>
+        <option value="">-- Pilih Layanan --</option>
+        <option value="Cuci Kering" data-harga="5000">Cuci Kering</option>
+        <option value="Cuci Basah" data-harga="6000">Cuci Basah</option>
+        <option value="Setrika" data-harga="4000">Setrika</option>
+        <option value="Lengkap (Cuci + Setrika)" data-harga="8000">Lengkap (Cuci + Setrika)</option>
+      </select>
+
+      <label for="jumlah">Jumlah (kg)</label>
+      <input type="number" id="jumlah" name="jumlah" min="0.1" step="0.1" required>
+
+      <label for="tanggal">Tanggal</label>
+      <input type="date" id="tanggal" name="tanggal" required>
+
+      <!-- Input tersembunyi untuk menyimpan total harga -->
+      <input type="hidden" id="hidden-total-harga" name="total_harga">
+
+      <div class="total-price">
+        Total Harga: Rp <span id="total-harga">0</span>
+      </div>
+
+      <button type="submit">Kirim Pesanan</button>
+    </form>
 
     <a class="back-link" href="{{ route('user.dashboard') }}">← Kembali ke Dashboard</a>
   </div>
 
   <script>
-    // Update harga total saat memilih layanan atau jumlah kg
     document.getElementById('layanan').addEventListener('change', updateTotal);
     document.getElementById('jumlah').addEventListener('input', updateTotal);
 
     function updateTotal() {
-      var layanan = document.getElementById('layanan');
-      var jumlah = document.getElementById('jumlah').value;
-      var hargaPerKg = layanan.options[layanan.selectedIndex].getAttribute('data-harga');
-      
-      if (jumlah && hargaPerKg) {
-        var total = hargaPerKg * jumlah;
-        document.getElementById('total-harga').textContent = total.toLocaleString();
+      const layanan = document.getElementById('layanan');
+      const jumlah = parseFloat(document.getElementById('jumlah').value);
+      const hargaPerKg = layanan.options[layanan.selectedIndex].getAttribute('data-harga');
+      const totalSpan = document.getElementById('total-harga');
+      const hiddenTotal = document.getElementById('hidden-total-harga');
+
+      // Debugging: Pastikan hargaPerKg dan jumlah memiliki nilai yang benar
+      console.log('Harga per Kg: ', hargaPerKg);
+      console.log('Jumlah: ', jumlah);
+
+      // Pastikan layanan dan harga ada dan jumlah valid
+      if (layanan.selectedIndex !== 0 && !isNaN(jumlah) && jumlah > 0 && hargaPerKg) {
+        const total = Math.round(jumlah * parseFloat(hargaPerKg));  // Pastikan parseFloat untuk harga
+        totalSpan.textContent = total.toLocaleString('id-ID');  // Format ke IDR
+        hiddenTotal.value = total;
+      } else {
+        totalSpan.textContent = '0';  // Jika input tidak valid
+        hiddenTotal.value = '';
+      }
+    }
+
+    // Panggil fungsi updateTotal untuk inisialisasi pertama kali
+    updateTotal();
+
+    // Fungsi untuk memastikan layanan sudah terpilih
+    window.onload = () => {
+      if (document.getElementById('layanan').value !== "") {
+        updateTotal(); // Panggil updateTotal jika sudah ada layanan yang dipilih
       }
     }
   </script>

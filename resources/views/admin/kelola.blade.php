@@ -114,6 +114,6 @@
       </table>
     </div>
   </div>
-
+  <a class="back-link" href="{{ route('admin.dashboard') }}">← Kembali ke Dashboard</a>
 </body>
 </html>

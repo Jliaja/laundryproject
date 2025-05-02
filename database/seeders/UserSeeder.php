@@ -25,5 +25,6 @@ class UserSeeder extends Seeder
             'role' => 'user',
             'address' => 'rumah',
         ]);
+    
     }
 }

@@ -16,6 +16,7 @@ class Pesanan extends Model
         'nama_pelanggan',
         'layanan',
         'jumlah',
+        'total_harga',
         'tanggal',
         'status',
     ];

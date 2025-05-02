@@ -8,6 +8,7 @@ use App\Http\Controllers\PesananController;
 use App\Http\Controllers\VerifController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\KeuanganController;
 use App\Http\Middleware\CekLogin;
 
 // Halaman Utama
@@ -41,9 +42,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/user/profile/edit', [UserController::class, 'editProfile'])->name('user.profile.edit');
     Route::put('/user/profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
 
-    // Ganti Password (Jika diperlukan)
-    Route::get('/user/change-password', [UserController::class, 'showChangePasswordForm'])->name('user.change-password');
-    Route::post('/user/change-password', [UserController::class, 'changePassword'])->name('user.change-password.update');
 });
 
 // Route untuk register
@@ -66,6 +64,7 @@ Route::post('/resetpassword', [VerifController::class, 'resetPassword'])->name('
 Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/kelola', [AdminController::class, 'kelolaPesanan'])->name('kelola');
-    Route::get('/transaksi', [AdminController::class, 'riwayatKeuangan'])->name('transaksi');
     Route::put('/pesanan/update/{id}', [PesananController::class, 'update'])->name('pesanan.update');
+    Route::get('keuangan', [KeuanganController::class, 'riwayatKeuangan'])->name('keuangan');
+
 });

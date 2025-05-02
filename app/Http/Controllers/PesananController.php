@@ -20,44 +20,49 @@ class PesananController extends Controller
      * Simpan pesanan baru ke database.
      */
     public function store(Request $request)
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
-        }
-
-        $user = Auth::user();
-
-        $request->validate([
-            'layanan' => 'required|string',
-            'jumlah' => 'required|numeric|min:1',
-            'tanggal' => 'required|date',
-        ]);
-
-        $hargaPerKg = [
-            'Cuci Kering' => 5000,
-            'Cuci Basah' => 6000,
-            'Setrika' => 4000,
-            'Lengkap (Cuci + Setrika)' => 8000
-        ];
-
-        $layanan = $request->input('layanan');
-        $jumlah = $request->input('jumlah');
-        $totalHarga = $hargaPerKg[$layanan] * $jumlah;
-
-        $pesanan = Pesanan::create([
-            'user_id' => $user->id,
-            'nama_pelanggan' => $user->username,
-            'layanan' => $layanan,
-            'jumlah' => $jumlah,
-            'tanggal' => $request->tanggal,
-            'total_harga' => $totalHarga,
-            'status' => 'pending',
-            'status_pembayaran' => 'Lunas',
-        ]);
-
-        return redirect()->route('user.confirmpesanan', ['id' => $pesanan->id])
-                         ->with('success', 'Pesanan berhasil dibuat dan dibayar!');
+{
+    if (!Auth::check()) {
+        return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
     }
+
+    $user = Auth::user();
+
+    $request->validate([
+        'layanan' => 'required|string',
+        'jumlah' => 'required|numeric|min:1',
+        'tanggal' => 'required|date',
+    ]);
+
+    // Daftar harga per Kg
+    $hargaPerKg = [
+        'Cuci Kering' => 5000,
+        'Cuci Basah' => 6000,
+        'Setrika' => 4000,
+        'Lengkap (Cuci + Setrika)' => 8000
+    ];
+
+    // Ambil nilai layanan, jumlah, dan hitung total harga
+    $layanan = $request->input('layanan');
+    $jumlah = $request->input('jumlah');
+    $totalHarga = $hargaPerKg[$layanan] * $jumlah; // Hitung total harga
+
+    // Simpan pesanan ke database
+    $pesanan = Pesanan::create([
+        'user_id' => $user->id,
+        'nama_pelanggan' => $user->username,
+        'layanan' => $layanan,
+        'jumlah' => $jumlah,
+        'tanggal' => $request->tanggal,
+        'total_harga' => $totalHarga, // Pastikan total_harga terisi
+        'status' => 'pending',
+        'status_pembayaran' => 'Lunas',
+    ]);
+
+    // Redirect ke halaman konfirmasi pesanan
+    return redirect()->route('user.confirmpesanan', ['id' => $pesanan->id])
+                     ->with('success', 'Pesanan berhasil dibuat dan dibayar!');
+}
+
 
     /**
      * Tampilkan halaman konfirmasi pesanan.
