@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
+use App\Models\Pesanan;
 
 class UserController extends Controller
 {
@@ -63,4 +64,32 @@ class UserController extends Controller
 
         return redirect()->route('user.profile.edit')->with('success', 'Profil berhasil diperbarui!');
     }
+//     public function viewPilihPengambilan(Request $request)
+// {
+//     // Pastikan ID pesanan valid dan milik user
+//     $pesanan = Pesanan::where('id', $request->pesanan_id)
+//                       ->where('user_id', Auth::id())
+//                       ->where('status', 'selesai')
+//                       ->firstOrFail();
+
+//     return view('user.pilihpengambilan', compact('pesanan'));
+// }
+
+// public function submitPilihPengambilan(Request $request)
+// {
+//     $request->validate([
+//         'pesanan_id' => 'required|exists:pesanans,id',
+//         'metode' => 'required|in:antar_jemput,datang_sendiri',
+//     ]);
+
+//     $pesanan = Pesanan::where('id', $request->pesanan_id)
+//                       ->where('user_id', Auth::id())
+//                       ->firstOrFail();
+
+//     $pesanan->metode_pengambilan = $request->metode;
+//     $pesanan->save();
+
+//     return redirect()->route('user.pesanan')->with('success', 'Metode pengambilan berhasil dipilih.');
+// }
+
 }

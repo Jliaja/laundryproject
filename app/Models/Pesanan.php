@@ -12,13 +12,7 @@ class Pesanan extends Model
     protected $table = 'pesanans'; // Nama tabel dalam database
 
     protected $fillable = [
-        'user_id',
-        'nama_pelanggan',
-        'layanan',
-        'jumlah',
-        'total_harga',
-        'tanggal',
-        'status',
+        'user_id', 'nama_pelanggan', 'layanan', 'jumlah', 'total_harga', 'tanggal', 'status', 'metode_pengambilan', 'jarak'
     ];
 
     // Relasi dengan User

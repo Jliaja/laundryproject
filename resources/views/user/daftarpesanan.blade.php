@@ -21,11 +21,6 @@
             margin-bottom: 20px;
             text-align: center;
         }
-        .user-info {
-            text-align: center;
-            margin-bottom: 20px;
-            display: none;  /* Menyembunyikan elemen user-info */
-        }
         .pesanan-list {
             list-style-type: none;
             padding: 0;
@@ -51,6 +46,18 @@
         .back-link:hover {
             text-decoration: underline;
         }
+        .action-btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .action-btn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -63,12 +70,6 @@
         </div>
     @endif
 
-    <!-- Bagian ini disembunyikan -->
-    <div class="user-info">
-        <p><strong>Username:</strong> {{ Auth::user()->username }}</p>
-        <p><strong>Jumlah Pesanan:</strong> {{ $pesanan->count() }}</p>
-    </div>
-
     @if($pesanan->isEmpty())
         <p style="text-align: center;">Tidak ada pesanan ditemukan.</p>
     @else
@@ -78,8 +79,23 @@
                     <h4>Pesanan ID: {{ $p->id }}</h4>
                     <p><strong>Layanan:</strong> {{ $p->layanan }}</p>
                     <p><strong>Jumlah:</strong> {{ $p->jumlah }} kg</p>
+                    <p><strong>Total Harga:</strong> Rp. {{ number_format($p->total_harga, 0, ',', '.') }}</p>
                     <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($p->tanggal)->format('d-m-Y') }}</p>
                     <p><strong>Status:</strong> {{ ucfirst($p->status) }}</p>
+
+                    @if($p->status == 'selesai' && !$p->metode_pengambilan)
+                        <!-- Tombol untuk lanjut ke metode pengambilan -->
+                        <form action="{{ route('user.pilihpengambilan') }}" method="GET" style="margin-top: 15px;">
+                            <input type="hidden" name="pesanan_id" value="{{ $p->id }}">
+                            <button type="submit" class="action-btn">Atur Pengambilan</button>
+                        </form>
+                    @elseif($p->status == 'pending')
+                        <p>Status pesanan: Pending</p>
+                    @elseif($p->status == 'batal')
+                        <p>Status pesanan: Dibatalkan</p>
+                    @elseif($p->status == 'proses')
+                        <p>Status pesanan: Dalam Proses</p>
+                    @endif
                 </li>
             @endforeach
         </ul>

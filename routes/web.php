@@ -33,14 +33,22 @@ Route::middleware(['auth'])->group(function () {
     // Pesanan
     Route::get('/buatpesanan', [PesananController::class, 'create'])->name('user.buatpesanan');
     Route::post('/buatpesanan', [PesananController::class, 'store'])->name('user.storepesanan');
-    Route::get('daftarpesanan', [PesananController::class, 'daftarpesanan'])->name('user.daftarpesanan');
+    Route::get('/daftarpesanan', [PesananController::class, 'daftarpesanan'])->name('user.daftarpesanan');
     Route::get('/confirmpesanan/{id}', [PesananController::class, 'confirm'])->name('user.confirmpesanan');
     Route::get('/riwayatpesanan', [PesananController::class, 'history'])->name('user.historypesanan');
-
+    Route::get('/pilihpengambilan/{pesanan_id}', [PesananController::class, 'showPilihPengambilan'])->name('user.pilihpengambilan');
+    // Route untuk menyimpan pilihan pengambilan (POST)
+    Route::post('/pilihpengambilan', [PesananController::class, 'submitPilihPengambilan'])->name('user.pilihpengambilan.submit');
+    
     // Profil Pengguna
     Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
     Route::get('/user/profile/edit', [UserController::class, 'editProfile'])->name('user.profile.edit');
     Route::put('/user/profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
+
+    // Xendit
+    Route::post('/xendit/callback', [XenditController::class, 'callback']);
+    Route::get('/pesanan/{id}/bayar', [PesananController::class, 'bayar'])->name('pesanan.bayar');
+    Route::post('/webhook', [XenditController::class, 'handleWebhook']);
 
 });
 
