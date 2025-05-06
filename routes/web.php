@@ -37,7 +37,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/confirmpesanan/{id}', [PesananController::class, 'confirm'])->name('user.confirmpesanan');
     Route::get('/riwayatpesanan', [PesananController::class, 'history'])->name('user.historypesanan');
     Route::get('/pilihpengambilan/{pesanan_id}', [PesananController::class, 'showPilihPengambilan'])->name('user.pilihpengambilan');
-    // Route untuk menyimpan pilihan pengambilan (POST)
     Route::post('/pilihpengambilan', [PesananController::class, 'submitPilihPengambilan'])->name('user.pilihpengambilan.submit');
     
     // Profil Pengguna

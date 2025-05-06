@@ -150,29 +150,44 @@ class PesananController extends Controller
         // Mencari pesanan berdasarkan ID
         $pesanan = Pesanan::findOrFail($pesanan_id);
 
-        // Mengirim data pesanan ke view
-        return view('user.pilihpengambilan', compact('pesanan'));
+        // Ambil alamat pengguna yang terkait dengan pesanan
+        $user = Auth::user();
+        $address = $user->address;
+
+        // Kirim data pesanan dan alamat ke view
+        return view('user.pilihpengambilan', compact('pesanan', 'address'));
     }
 
     /**
      * Simpan pilihan metode pengambilan pesanan.
      */
     public function submitPilihPengambilan(Request $request)
-    {
-        // Validasi input
-        $request->validate([
-            'pesanan_id' => 'required|exists:pesanans,id',
-            'metode' => 'required|in:antar_jemput,datang_sendiri',
-        ]);
+{
+    // Validasi input
+    $request->validate([
+        'pesanan_id' => 'required|exists:pesanans,id',
+        'metode' => 'required|in:antar,ambil', // Sesuaikan dengan nilai yang ada
+    ]);
 
-        // Cari pesanan berdasarkan ID
-        $pesanan = Pesanan::find($request->pesanan_id);
+    // Cari pesanan berdasarkan ID
+    $pesanan = Pesanan::find($request->pesanan_id);
 
-        // Simpan pilihan metode pengambilan
-        $pesanan->metode_pengambilan = $request->metode;
-        $pesanan->save();
+    // Simpan pilihan metode pengambilan
+    $pesanan->metode_pengambilan = $request->metode;
 
-        // Redirect dengan pesan sukses
-        return redirect()->route('user.dashboard')->with('success', 'Metode pengambilan berhasil dipilih.');
+    // Simpan perubahan
+    $pesanan->save();
+
+    // Menentukan pesan berdasarkan metode yang dipilih
+    if ($pesanan->metode_pengambilan === 'ambil') {
+        $message = 'Silahkan ambil pesanan laundry kamu, batas waktu pengambilan pesanan. Terimakasih';
+    } else {
+        $message = 'Pesanan akan diantarkan hari ini. Terimakasih';
     }
+
+    // Redirect kembali dengan pesan sukses
+    return redirect()->route('user.pilihpengambilan', ['pesanan_id' => $pesanan->id])->with('success', $message);
+}
+
+
 }

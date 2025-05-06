@@ -1,6 +1,6 @@
 <style>
   body {
-    background: linear-gradient(to right, #6dd5fa, #2980b9);
+    background: linear-gradient(to right, #1c92d2, #f2fcfe);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -10,12 +10,12 @@
   }
 
   .login-box {
-    background: #fff;
+    background: #ffffff;
     padding: 40px 30px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
     text-align: center;
-    width: 340px;
+    width: 350px;
   }
 
   .login-box img {
@@ -26,35 +26,36 @@
   .login-box input[type="text"],
   .login-box input[type="password"] {
     width: 100%;
-    padding: 12px 15px;
+    padding: 12px 14px;
     margin: 10px 0;
-    border: 1px solid #ccc;
+    border: 1px solid #dce3e8;
     border-radius: 8px;
     font-size: 14px;
-    outline: none;
     transition: border-color 0.3s;
   }
 
-  .login-box input:focus {
-    border-color: #2980b9;
+  .login-box input[type="text"]:focus,
+  .login-box input[type="password"]:focus {
+    border-color: #1c92d2;
+    outline: none;
   }
 
   .login-box button {
     width: 100%;
     padding: 12px;
     margin-top: 15px;
-    background-color: #2980b9;
+    background-color: #1c92d2;
     color: white;
     border: none;
     border-radius: 8px;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 15px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease;
   }
 
   .login-box button:hover {
-    background-color: #1c5980;
+    background-color: #166ca5;
   }
 
   .login-box .links {
@@ -65,13 +66,13 @@
   }
 
   .login-box .links a {
-    color: #2980b9;
+    color: #1c92d2;
     text-decoration: none;
     transition: color 0.3s;
   }
 
   .login-box .links a:hover {
-    color: #1c5980;
+    color: #125b87;
   }
 
   .message {
@@ -80,19 +81,21 @@
   }
 
   .success {
-    color: green;
+    color: #28a745;
   }
 
   .error {
-    color: red;
+    color: #e74c3c;
   }
 </style>
+
+
 </head>
 <body>
   <form class="login-box" action="{{ route('login.submit') }}" method="POST">
     @csrf
 
-    <img src="{{ asset('user-icon.png') }}" alt="User Icon">
+    <img src="{{ asset('storage/usericon.jpeg') }}" alt="User Icon">
 
     <input type="text" name="username" placeholder="USERNAME" value="{{ old('username') }}" required>
     @error('username')

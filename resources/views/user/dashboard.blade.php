@@ -6,7 +6,7 @@
   <style>
     :root {
       --primary: #2d8cff;
-      --secondary: #f5f7fa;
+      --secondary: #eef3f9;
       --text-dark: #2c3e50;
       --text-light: #6c757d;
       --bg-white: #ffffff;
@@ -22,7 +22,7 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--secondary);
+      background: linear-gradient(to right, #dce9f9, #f4f8fb);
       color: var(--text-dark);
     }
 
@@ -34,6 +34,9 @@
       align-items: center;
       border-bottom: 1px solid #e0e0e0;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     .navbar h2 {
@@ -57,65 +60,65 @@
     }
 
     .content {
-      max-width: 960px;
-      margin: 30px auto;
+      max-width: 1000px;
+      margin: 40px auto;
       padding: 20px;
     }
 
     .card {
       background-color: white;
-      border-radius: 10px;
-      padding: 25px 30px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-      margin-bottom: 20px;
+      border-radius: 12px;
+      padding: 35px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+      text-align: center;
+      transition: transform 0.2s;
     }
 
-    h1, h3 {
-      margin-bottom: 15px;
+    .card:hover {
+      transform: translateY(-3px);
     }
 
-    p, li {
-      font-size: 16px;
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+
+    p {
+      font-size: 17px;
       color: var(--text-light);
       line-height: 1.6;
     }
 
-    ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    li::before {
-      content: "✔️";
-      margin-right: 10px;
-      color: var(--primary);
-    }
-
     .button-container {
       display: flex;
-      gap: 15px;
-      margin-top: 20px;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
     }
 
     .action-btn {
       background-color: var(--primary);
       color: white;
-      padding: 10px 20px;
-      border-radius: 6px;
+      padding: 12px 28px;
+      border-radius: 8px;
       font-weight: 500;
+      font-size: 16px;
       text-decoration: none;
-      transition: 0.2s;
+      transition: background 0.2s ease-in-out, transform 0.2s;
     }
 
     .action-btn:hover {
-      background-color: #1b6edc;
+      background-color: #1a6ed0;
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
 
   <div class="navbar">
-    <h2>Halo, {{ auth()->user()->name }}</h2>
+    <h2>Halo, {{ auth()->user()->username }}</h2>
     <form class="logout-form" method="POST" action="{{ route('logout') }}">
       @csrf
       <button type="submit" class="logout-btn">Logout</button>
@@ -125,10 +128,8 @@
   <div class="content">
     <div class="card">
       <h1>Selamat Datang 👋</h1>
-      <p>Hai <strong>{{ auth()->user()->name }}</strong>! Kamu berhasil login. Gunakan menu berikut untuk mengelola akunmu.</p>
+      <p>Hai <strong>{{ auth()->user()->username }}</strong>! Kamu berhasil login ke aplikasi. Silakan gunakan menu di bawah untuk mulai mengelola akun atau pesananmu.</p>
     </div>
-
-
 
     <div class="button-container">
       <a href="{{ route('user.profile') }}" class="action-btn">Profil</a>
