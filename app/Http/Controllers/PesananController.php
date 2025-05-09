@@ -5,21 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Pesanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Services\XenditService;
+use App\Services\MidtransService;
 
 class PesananController extends Controller
 {
-    /**
-     * Tampilkan form buat pesanan.
-     */
     public function create()
     {
         return view('user.buatpesanan');
     }
 
-    /**
-     * Simpan pesanan baru ke database.
-     */
     public function store(Request $request)
     {
         if (!Auth::check()) {
@@ -28,14 +22,12 @@ class PesananController extends Controller
 
         $user = Auth::user();
 
-        // Validasi input
         $request->validate([
             'layanan' => 'required|string',
             'jumlah' => 'required|numeric|min:1',
             'tanggal' => 'required|date',
         ]);
 
-        // Daftar harga per kg
         $hargaPerKg = [
             'Cuci Kering' => 5000,
             'Cuci Basah' => 6000,
@@ -43,12 +35,10 @@ class PesananController extends Controller
             'Lengkap (Cuci + Setrika)' => 8000
         ];
 
-        // Ambil layanan dan jumlah, hitung total harga
         $layanan = $request->input('layanan');
         $jumlah = $request->input('jumlah');
         $totalHarga = $hargaPerKg[$layanan] * $jumlah;
 
-        // Simpan pesanan ke database
         $pesanan = Pesanan::create([
             'user_id' => $user->id,
             'nama_pelanggan' => $user->username,
@@ -57,36 +47,26 @@ class PesananController extends Controller
             'tanggal' => $request->tanggal,
             'total_harga' => $totalHarga,
             'status' => 'pending',
-            'status_pembayaran' => 'Lunas',
+            'status_pembayaran' => 'pending',
         ]);
 
-        // Redirect ke halaman konfirmasi pesanan
         return redirect()->route('user.confirmpesanan', ['id' => $pesanan->id])
-                         ->with('success', 'Pesanan berhasil dibuat dan dibayar!');
+                         ->with('success', 'Pesanan berhasil dibuat, silakan lanjutkan pembayaran.');
     }
 
-    /**
-     * Tampilkan halaman konfirmasi pesanan.
-     */
     public function confirm($id)
     {
         $pesanan = Pesanan::findOrFail($id);
         return view('user.confirmpesanan', compact('pesanan'));
     }
 
-    /**
-     * Tampilkan daftar pesanan milik user yang login.
-     */
     public function daftarpesanan()
     {
-        $user = Auth::user(); // Mendapatkan data user yang sedang login
-        $pesanan = Pesanan::where('user_id', $user->id)->get(); // Ambil pesanan milik user
+        $user = Auth::user();
+        $pesanan = Pesanan::where('user_id', $user->id)->get();
         return view('user.daftarpesanan', compact('pesanan'));
     }
 
-    /**
-     * Ubah status pesanan oleh admin.
-     */
     public function ubahStatus($id)
     {
         if (!Auth::check() || Auth::user()->role !== 'admin') {
@@ -94,15 +74,12 @@ class PesananController extends Controller
         }
 
         $pesanan = Pesanan::findOrFail($id);
-        $pesanan->status = 'proses';  // Set status menjadi proses
+        $pesanan->status = 'proses';
         $pesanan->save();
 
         return redirect()->route('admin.kelola')->with('success', 'Status pesanan berhasil diubah!');
     }
 
-    /**
-     * Update status pesanan oleh admin.
-     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -116,78 +93,43 @@ class PesananController extends Controller
         return redirect()->route('admin.kelola')->with('success', 'Status pesanan berhasil diperbarui.');
     }
 
-    /**
-     * Proses pembayaran melalui Xendit.
-     */
-    public function bayar($id, XenditService $xendit)
+    public function bayar($id, MidtransService $midtrans)
     {
-        // Cari pesanan berdasarkan ID
-        $order = Pesanan::findOrFail($id);
+        $pesanan = Pesanan::findOrFail($id);
 
-        // Pastikan pesanan belum dibayar
-        if ($order->status_pembayaran !== 'Lunas') {
-            return redirect()->route('user.daftarpesanan')
-                             ->with('error', 'Pesanan sudah dibayar atau sedang diproses.');
+        if ($pesanan->status_pembayaran === 'Lunas') {
+            return redirect()->route('user.daftarpesanan')->with('error', 'Pesanan sudah dibayar.');
         }
 
-        // Membuat invoice melalui Xendit
-        $invoice = $xendit->createInvoice($order);
+        $paymentUrl = $midtrans->createPayment($pesanan);
 
-        // Simpan URL invoice ke database dan set status pembayaran menjadi pending
-        $order->invoice_url = $invoice['invoice_url'];  // Simpan URL untuk ke halaman Xendit
-        $order->status_pembayaran = 'pending';  // Set status pembayaran jadi pending
-        $order->save();
-
-        // Redirect ke URL invoice untuk pembayaran
-        return redirect($invoice['invoice_url']);
+        return redirect($paymentUrl);
     }
 
-    /**
-     * Tampilkan form pemilihan metode pengambilan pesanan.
-     */
     public function showPilihPengambilan($pesanan_id)
     {
-        // Mencari pesanan berdasarkan ID
         $pesanan = Pesanan::findOrFail($pesanan_id);
-
-        // Ambil alamat pengguna yang terkait dengan pesanan
         $user = Auth::user();
         $address = $user->address;
 
-        // Kirim data pesanan dan alamat ke view
         return view('user.pilihpengambilan', compact('pesanan', 'address'));
     }
 
-    /**
-     * Simpan pilihan metode pengambilan pesanan.
-     */
     public function submitPilihPengambilan(Request $request)
-{
-    // Validasi input
-    $request->validate([
-        'pesanan_id' => 'required|exists:pesanans,id',
-        'metode' => 'required|in:antar,ambil', // Sesuaikan dengan nilai yang ada
-    ]);
+    {
+        $request->validate([
+            'pesanan_id' => 'required|exists:pesanans,id',
+            'metode' => 'required|in:antar,ambil',
+        ]);
 
-    // Cari pesanan berdasarkan ID
-    $pesanan = Pesanan::find($request->pesanan_id);
+        $pesanan = Pesanan::find($request->pesanan_id);
+        $pesanan->metode_pengambilan = $request->metode;
+        $pesanan->save();
 
-    // Simpan pilihan metode pengambilan
-    $pesanan->metode_pengambilan = $request->metode;
+        $message = $pesanan->metode_pengambilan === 'ambil'
+            ? 'Silahkan ambil pesanan laundry kamu. Terima kasih.'
+            : 'Pesanan akan diantarkan hari ini. Terima kasih.';
 
-    // Simpan perubahan
-    $pesanan->save();
-
-    // Menentukan pesan berdasarkan metode yang dipilih
-    if ($pesanan->metode_pengambilan === 'ambil') {
-        $message = 'Silahkan ambil pesanan laundry kamu, batas waktu pengambilan pesanan. Terimakasih';
-    } else {
-        $message = 'Pesanan akan diantarkan hari ini. Terimakasih';
+        return redirect()->route('user.pilihpengambilan', ['pesanan_id' => $pesanan->id])->with('success', $message);
     }
-
-    // Redirect kembali dengan pesan sukses
-    return redirect()->route('user.pilihpengambilan', ['pesanan_id' => $pesanan->id])->with('success', $message);
-}
-
-
 }
