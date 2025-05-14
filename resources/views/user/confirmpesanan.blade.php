@@ -2,39 +2,37 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Pesanan Terkonfirmasi</title>
+  <title>Konfirmasi Pesanan</title>
   <style>
-    /* Reset margin dan padding */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    /* Background halaman */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #4ac6e8, #a1e0f3);
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
       margin: 0;
       padding: 0;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      overflow: hidden;
     }
 
-    /* Container utama */
     .container {
       max-width: 800px;
-      background-color: #ffffffd9;
+      background-color: #ffffff;
       padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
       text-align: center;
       animation: fadeIn 1s ease-in-out;
+      backdrop-filter: blur(10px);
     }
 
-    /* Judul utama */
     h2 {
       font-size: 2rem;
       color: #2c3e50;
@@ -43,7 +41,6 @@
       letter-spacing: 1px;
     }
 
-    /* Styling teks utama */
     p {
       font-size: 1.1rem;
       color: #333;
@@ -51,11 +48,11 @@
       line-height: 1.6;
     }
 
-    /* Styling list rincian pesanan */
     ul {
       list-style: none;
       padding: 0;
       margin-bottom: 30px;
+      text-align: left;
     }
 
     ul li {
@@ -64,6 +61,7 @@
       margin: 10px 0;
       padding-left: 25px;
       position: relative;
+      line-height: 1.5;
     }
 
     ul li::before {
@@ -73,11 +71,33 @@
       color: #28a745;
     }
 
-    /* Tombol Kembali ke Dashboard */
+    .status-pending {
+      background-color: #ffc107;
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: bold;
+      margin: 20px 0;
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .payment-instruction {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+
     .button {
       background-color: #28a745;
       color: white;
-      padding: 12px 25px;
+      padding: 14px 28px;
       border-radius: 50px;
       font-weight: bold;
       text-decoration: none;
@@ -85,15 +105,37 @@
       transition: all 0.3s ease;
       font-size: 1.1rem;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      text-transform: uppercase;
+      margin-top: 15px;
     }
 
     .button:hover {
       background-color: #218838;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
-    /* Animasi Fade-in */
+    /* Pay button styling */
+    .pay-button {
+      background-color: #007bff;
+      padding: 14px 28px;
+      border-radius: 50px;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      text-transform: uppercase;
+      margin-top: 20px;
+    }
+
+    .pay-button:hover {
+      background-color: #0056b3;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
     @keyframes fadeIn {
       0% {
         opacity: 0;
@@ -110,8 +152,8 @@
 <body>
 
   <div class="container">
-    <h2>Pesanan Berhasil Dibuat</h2>
-    <p>Pesanan Anda berhasil dibuat! Berikut adalah rincian pesanan:</p>
+    <h2>Konfirmasi Pesanan</h2>
+    <p>Pesanan Anda berhasil dibuat! Berikut adalah rincian pesanan Anda:</p>
 
     @isset($pesanan)
       <ul>
@@ -120,11 +162,23 @@
         <li><strong>Jumlah:</strong> {{ $pesanan->jumlah }} kg</li>
         <li><strong>Tanggal:</strong> {{ $pesanan->tanggal }}</li>
       </ul>
+
+      <div class="status-pending">Status: Pending Pembayaran</div>
+
+      <div class="payment-instruction">
+        Silakan selesaikan pembayaran Anda untuk memproses pesanan.<br>
+        Anda dapat melakukan pembayaran melalui metode yang tersedia di halaman pembayaran.
+      </div>
+
+      <!-- Pay Now Button -->
+      <a href="{{ route('user.bayar', ['id' => $pesanan->id]) }}" class="pay-button">Bayar</a>
+
+
     @else
       <p>Pesanan tidak ditemukan!</p>
     @endisset
 
-    <a href="{{ route('user.dashboard') }}" class="button">Kembali ke Dashboard</a>
+    <a href="{{ route('user.daftarpesanan') }}" class="button">Daftar Pesanan Kamu</a>
   </div>
 
 </body>

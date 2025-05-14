@@ -57,6 +57,23 @@
         .back-link:hover {
             text-decoration: underline;
         }
+
+        /* Button styling */
+        .pay-button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .pay-button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -81,6 +98,8 @@
                 <th>Total Harga</th>
                 <th>Tanggal</th>
                 <th>Status</th>
+                <th>Status Pembayaran</th>
+                <th>Action</th> <!-- Kolom Action untuk tombol bayar -->
             </tr>
         </thead>
         <tbody>
@@ -96,6 +115,24 @@
                             <a href="{{ route('user.pilihpengambilan', ['pesanan_id' => $p->id]) }}">Atur Pengambilan</a>
                         @else
                             {{ ucfirst($p->status) }}
+                        @endif
+                    </td>
+                    <td>
+                        @if($p->status_pembayaran == 'pending')
+                            <span style="color: orange;">Belum Dibayar</span>
+                        @elseif($p->status_pembayaran == 'paid')
+                            <span style="color: green;">Sudah Dibayar</span>
+                        @else
+                            <span style="color: gray;">Status Tidak Diketahui</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($p->status_pembayaran == 'pending')
+                            <!-- Tombol Bayar hanya ditampilkan untuk status pembayaran 'pending' -->
+                            <a href="{{ route('user.bayar', ['id' => $p->id]) }}" class="pay-button">Bayar</a>
+
+                        @else
+                            - 
                         @endif
                     </td>
                 </tr>

@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Middleware\CekLogin;
+use App\Http\Controllers\MidtransController;
 
 // Halaman Utama
 Route::get('/', function () {
@@ -20,40 +21,39 @@ Route::get('/', function () {
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/midtrans/callback', [PesananController::class, 'midtransCallback']);
+
+
+
+
+// Route untuk register
+Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
+
+// Route untuk pembayaran
+Route::get('/bayar/{id}', [PesananController::class, 'bayar'])->name('user.bayar');
+Route::post('/bayar/{id}', [PesananController::class, 'prosesBayar'])->name('user.bayar.submit');
 
 // Route untuk dashboard (hanya bisa diakses setelah login)
 Route::middleware(['auth'])->group(function () {
     // Dashboard Pengguna
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('user.dashboard');
     
-    // Ganti Password
-    Route::get('/ganti-password', [UserController::class, 'gantiPasswordForm'])->name('user.password.form');
-    Route::post('/ganti-password', [UserController::class, 'updatePassword'])->name('user.change-password');
-
     // Pesanan
     Route::get('/buatpesanan', [PesananController::class, 'create'])->name('user.buatpesanan');
     Route::post('/buatpesanan', [PesananController::class, 'store'])->name('user.storepesanan');
     Route::get('/daftarpesanan', [PesananController::class, 'daftarpesanan'])->name('user.daftarpesanan');
     Route::get('/confirmpesanan/{id}', [PesananController::class, 'confirm'])->name('user.confirmpesanan');
-    Route::get('/riwayatpesanan', [PesananController::class, 'history'])->name('user.historypesanan');
     Route::get('/pilihpengambilan/{pesanan_id}', [PesananController::class, 'showPilihPengambilan'])->name('user.pilihpengambilan');
     Route::post('/pilihpengambilan', [PesananController::class, 'submitPilihPengambilan'])->name('user.pilihpengambilan.submit');
+    
     
     // Profil Pengguna
     Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
     Route::get('/user/profile/edit', [UserController::class, 'editProfile'])->name('user.profile.edit');
     Route::put('/user/profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
-
-    // Xendit
-    Route::post('/xendit/callback', [XenditController::class, 'callback']);
-    Route::get('/pesanan/{id}/bayar', [PesananController::class, 'bayar'])->name('pesanan.bayar');
-    Route::post('/webhook', [XenditController::class, 'handleWebhook']);
-
 });
 
-// Route untuk register
-Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 
 // 1. Form input email (lupa password)
 Route::get('/lupa-password', [VerifController::class, 'formEmail'])->name('kirimemail'); // Menampilkan form untuk input email

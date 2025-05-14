@@ -20,10 +20,14 @@ class MidtransController extends Controller
 
         $notification = new Notification();
 
+        // Ambil data dari notifikasi
         $transaction = $notification->transaction_status;
         $type = $notification->payment_type;
         $fraud = $notification->fraud_status;
         $orderId = $notification->order_id;
+
+        // Log request untuk debugging
+        Log::info('Midtrans Callback Received:', $request->all());
 
         // Ambil ID dari order_id format: ORDER-123-1715244800
         preg_match('/ORDER-(\d+)-/', $orderId, $matches);
@@ -40,7 +44,7 @@ class MidtransController extends Controller
             return response()->json(['message' => 'Pesanan tidak ditemukan'], 404);
         }
 
-        // Update status pembayaran dan status pesanan
+        // Update status pembayaran dan status pesanan berdasarkan status transaksi
         if ($transaction == 'capture') {
             if ($type == 'credit_card') {
                 if ($fraud == 'challenge') {
@@ -60,8 +64,12 @@ class MidtransController extends Controller
             $pesanan->status = 'batal';
         }
 
+        // Simpan status pesanan
         $pesanan->save();
 
+        Log::info('Status pesanan diperbarui: ', $pesanan->toArray());
+
+        // Kirim response sukses
         return response()->json(['message' => 'Notifikasi diterima dan diproses']);
     }
 }
