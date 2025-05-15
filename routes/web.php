@@ -9,7 +9,9 @@ use App\Http\Controllers\VerifController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\KeuanganController;
+use App\Http\Controllers\XenditController;
 use App\Http\Middleware\CekLogin;
+use App\Models\Transaksi;
 
 // Halaman Utama
 Route::get('/', function () {
@@ -38,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/riwayatpesanan', [PesananController::class, 'history'])->name('user.historypesanan');
     Route::get('/pilihpengambilan/{pesanan_id}', [PesananController::class, 'showPilihPengambilan'])->name('user.pilihpengambilan');
     Route::post('/pilihpengambilan', [PesananController::class, 'submitPilihPengambilan'])->name('user.pilihpengambilan.submit');
-    
+
     // Profil Pengguna
     Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
     Route::get('/user/profile/edit', [UserController::class, 'editProfile'])->name('user.profile.edit');
