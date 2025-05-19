@@ -7,7 +7,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PesananController;
-use App\Http\Controllers\VerifController;
+use App\Http\Controllers\ForgetPassController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\KeuanganController;
@@ -36,17 +36,16 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 
 
 // 1. Input Email
-Route::get('/lupa-password', [VerifController::class, 'formEmail'])->name('kirimemail');
-Route::post('/kirim-kode', [VerifController::class, 'kirimKode'])->name('verifikasi.kirim.kode');
+Route::get('/lupa-password', [ForgetPassController::class, 'formEmail'])->name('kirimemail');
+Route::post('/kirim-kode', [ForgetPassController::class, 'kirimKode'])->name('verifikasi.kirim.kode');
 
 // 2. Verifikasi Kode OTP
-Route::get('/verifikasi', [VerifController::class, 'formKode'])->name('verifikasi');
-Route::post('/verifikasi', [VerifController::class, 'verifikasiKode'])->name('verifikasi.submit');
+Route::get('/verifikasi', [ForgetPassController::class, 'formKode'])->name('verifikasi');
+Route::post('/verifikasi', [ForgetPassController::class, 'verifikasiKode'])->name('verifikasi.kode');
 
 // 3. Reset Password
-Route::get('/resetpassword', [VerifController::class, 'formResetPassword'])->name('resetpassword');
-Route::post('/resetpassword', [VerifController::class, 'resetPassword'])->name('password.reset');
-
+Route::get('/reset-password', [ForgetPassController::class, 'formResetPassword'])->name('password.reset.form');
+Route::post('/reset-password', [ForgetPassController::class, 'resetPassword'])->name('password.reset');
 /*
 |--------------------------------------------------------------------------
 | Route User - Hanya Bisa Diakses Setelah Login

@@ -6,6 +6,12 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background: 
+        linear-gradient(rgba(220, 233, 249, 0.85), rgba(244, 248, 251, 0.85)),
+        url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-dark);
+      min-height: 100vh;
             margin: 20px;
             background-color: #f9f9f9;
         }

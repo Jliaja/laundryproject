@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Dashboard User</title>
   <style>
     :root {
@@ -22,8 +22,13 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #dce9f9, #f4f8fb);
+      /* Background image + overlay */
+      background: 
+        linear-gradient(rgba(220, 233, 249, 0.85), rgba(244, 248, 251, 0.85)),
+        url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
+      background-size: cover;
       color: var(--text-dark);
+      min-height: 100vh;
     }
 
     .navbar {
@@ -66,7 +71,7 @@
     }
 
     .card {
-      background-color: white;
+      background-color: var(--bg-white);
       border-radius: 12px;
       padding: 35px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.05);

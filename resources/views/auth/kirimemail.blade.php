@@ -5,7 +5,12 @@
   <title>Lupa Password</title>
   <style>
     body {
-      background: linear-gradient(to right, #4ac6e8, #6be3f5);
+      background: 
+        linear-gradient(rgba(220, 233, 249, 0.85), rgba(244, 248, 251, 0.85)),
+        url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-dark);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -58,7 +63,7 @@
     button {
       width: 100%;
       padding: 12px;
-      background: #2c3e50;
+      background: #2d8cff;
       color: #fff;
       border: none;
       border-radius: 12px;
@@ -73,27 +78,49 @@
       background-color: #1a2935;
     }
 
-    .error-message {
+    .message {
       margin-top: 15px;
-      color: red;
       font-size: 14px;
       background: #ffecec;
       padding: 10px;
       border-radius: 8px;
+      color: red;
+    }
+
+    .success {
+      background: #e3ffe8;
+      color: green;
     }
   </style>
 </head>
 <body>
   <form class="box" method="POST" action="{{ route('verifikasi.kirim.kode') }}">
     @csrf
-    <h3>🔐 Lupa Password</h3>
+    <h3>Lupa Password</h3>
     <p>Masukkan email akun Anda dan kami akan mengirimkan kode verifikasi untuk reset password.</p>
     
     <input type="email" name="email" placeholder="Masukkan Email Anda" required>
-    <button type="submit">Kirim Kode 🔁</button>
+    <button type="submit">Kirim</button>
 
+    {{-- Pesan Error --}}
     @if(session('error'))
-      <div class="error-message">{{ session('error') }}</div>
+      <div class="message">{{ session('error') }}</div>
+    @endif
+
+    {{-- Pesan Sukses --}}
+    @if(session('pesan'))
+      <div class="message success">{{ session('pesan') }}</div>
+    @endif
+
+    {{-- Validasi Error --}}
+    @if ($errors->any())
+      <div class="message">
+        <ul style="margin: 0; padding-left: 20px; text-align: left;">
+          @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
     @endif
   </form>
 </body>
