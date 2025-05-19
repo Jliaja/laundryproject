@@ -32,10 +32,10 @@ class MidtransService
         ],
         'customer_details' => [
             'first_name' => $pesanan->nama_pelanggan,
-            'email' => $pesanan->user->email ?? 'user1@example.com',
+            'email' => $pesanan->user->email ?? ''
         ],
         'callbacks' => [
-            'finish' => route('midtrans.callback'),
+            'finish' => route('user.daftarpesanan'),
         ]
     ];
 

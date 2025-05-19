@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -10,66 +9,74 @@ use Illuminate\Support\Facades\Log;
 
 class MidtransController extends Controller
 {
-    public function callback(Request $request)
+    public function __construct()
     {
-        // Konfigurasi Midtrans
-        Config::$serverKey = config('midtrans.server_key');
-        Config::$isProduction = config('midtrans.is_production');
+        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
         Config::$isSanitized = true;
         Config::$is3ds = true;
+    }
 
-        $notification = new Notification();
+    public function callback(Request $request)
+    {
+        Log::info('Midtrans Callback Payload: ' . json_encode($request->all()));
 
-        // Ambil data dari notifikasi
-        $transaction = $notification->transaction_status;
-        $type = $notification->payment_type;
-        $fraud = $notification->fraud_status;
-        $orderId = $notification->order_id;
+        try {
+            $notif = new Notification();
 
-        // Log request untuk debugging
-        Log::info('Midtrans Callback Received:', $request->all());
+            $orderId = $notif->order_id;
+            $transactionStatus = $notif->transaction_status;
+            $fraudStatus = $notif->fraud_status;
 
-        // Ambil ID dari order_id format: ORDER-123-1715244800
-        preg_match('/ORDER-(\d+)-/', $orderId, $matches);
-        $pesananId = $matches[1] ?? null;
+            $pesanan = Pesanan::where('order_id', $orderId)->first();
 
-        if (!$pesananId) {
-            Log::error('Order ID tidak valid: ' . $orderId);
-            return response()->json(['message' => 'Invalid order ID'], 400);
-        }
-
-        $pesanan = Pesanan::find($pesananId);
-        if (!$pesanan) {
-            Log::error('Pesanan tidak ditemukan untuk ID: ' . $pesananId);
-            return response()->json(['message' => 'Pesanan tidak ditemukan'], 404);
-        }
-
-        // Update status pembayaran dan status pesanan berdasarkan status transaksi
-        if ($transaction == 'capture') {
-            if ($type == 'credit_card') {
-                if ($fraud == 'challenge') {
-                    $pesanan->status_pembayaran = 'pending';
-                } else {
-                    $pesanan->status_pembayaran = 'Lunas';
-                    $pesanan->status = 'proses';
-                }
+            if (!$pesanan) {
+                Log::error("Pesanan tidak ditemukan dengan order_id: $orderId");
+                return response()->json(['message' => 'Pesanan tidak ditemukan'], 404);
             }
-        } elseif ($transaction == 'settlement') {
-            $pesanan->status_pembayaran = 'Lunas';
-            $pesanan->status = 'proses';
-        } elseif ($transaction == 'pending') {
-            $pesanan->status_pembayaran = 'pending';
-        } elseif (in_array($transaction, ['deny', 'expire', 'cancel'])) {
-            $pesanan->status_pembayaran = 'gagal';
-            $pesanan->status = 'batal';
+
+            Log::info("Midtrans Callback - OrderID: $orderId, Status: $transactionStatus, Fraud: $fraudStatus");
+
+            switch ($transactionStatus) {
+                case 'capture':
+                    if ($fraudStatus == 'challenge') {
+                        $pesanan->status_pembayaran = 'pending';
+                        $pesanan->status = 'pending';
+                    } elseif ($fraudStatus == 'accept') {
+                        $pesanan->status_pembayaran = 'selesai';
+                        $pesanan->status = 'selesai';
+                    }
+                    break;
+
+                case 'settlement':
+                    $pesanan->status_pembayaran = 'selesai';
+                    $pesanan->status = 'selesai';
+                    break;
+
+                case 'pending':
+                    $pesanan->status_pembayaran = 'pending';
+                    $pesanan->status = 'pending';
+                    break;
+
+                case 'deny':
+                case 'cancel':
+                case 'expire':
+                    $pesanan->status_pembayaran = 'gagal';
+                    $pesanan->status = 'batal';
+                    break;
+
+                default:
+                    Log::warning("Status transaksi tidak dikenali: $transactionStatus");
+                    break;
+            }
+
+            $pesanan->save();
+
+            return response()->json(['message' => 'Callback berhasil diproses']);
+
+        } catch (\Exception $e) {
+            Log::error('Callback Error: ' . $e->getMessage());
+            return response()->json(['message' => 'Terjadi kesalahan'], 500);
         }
-
-        // Simpan status pesanan
-        $pesanan->save();
-
-        Log::info('Status pesanan diperbarui: ', $pesanan->toArray());
-
-        // Kirim response sukses
-        return response()->json(['message' => 'Notifikasi diterima dan diproses']);
     }
 }
