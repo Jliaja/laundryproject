@@ -58,15 +58,18 @@
     .message {
       margin-top: 15px;
       font-size: 14px;
-      background: #ffecec;
       padding: 10px;
       border-radius: 8px;
-      color: red;
     }
 
     .success {
       background: #e3ffe8;
       color: green;
+    }
+
+    .error-message {
+      background: #ffecec;
+      color: red;
     }
   </style>
 </head>
@@ -74,14 +77,16 @@
   <form class="verify-box" action="{{ route('verifikasi.kode') }}" method="POST">
     @csrf
     <h3>Masukkan Kode Verifikasi</h3>
-    <input type="text" name="kode" placeholder="Kode 6 Digit" required>
+    <input type="text" name="kode" placeholder="Kode 5 Digit" required>
     <button type="submit">Verifikasi</button>
 
     {{-- Pesan Session --}}
     @if(session('pesan'))
       <div class="message success">{{ session('pesan') }}</div>
-    @elseif(session('error'))
-      <div class="message">{{ session('error') }}</div>
+    @endif
+
+    @if(session('error'))
+      <div class="message error-message">{{ session('error') }}</div>
     @endif
   </form>
 </body>

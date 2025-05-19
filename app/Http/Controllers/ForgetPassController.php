@@ -59,7 +59,7 @@ class ForgetPassController extends Controller
             return redirect()->route('password.reset.form');
         }
 
-        return back()->with('pesan', '<span style="color:red;">Kode salah, coba lagi.</span>');
+        return back()->with('error', 'Kode salah, coba lagi');
     }
 
     // Form reset password
