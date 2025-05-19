@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\VerifController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\HargaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\XenditController;
@@ -46,10 +47,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/user/profile/edit', [UserController::class, 'editProfile'])->name('user.profile.edit');
     Route::put('/user/profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
 
-    // Xendit
-    Route::post('/xendit/callback', [XenditController::class, 'callback']);
-    Route::get('/pesanan/{id}/bayar', [PesananController::class, 'bayar'])->name('pesanan.bayar');
-    Route::post('/webhook', [XenditController::class, 'handleWebhook']);
 
 });
 
@@ -74,6 +71,14 @@ Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/kelola', [AdminController::class, 'kelolaPesanan'])->name('kelola');
     Route::put('/pesanan/update/{id}', [PesananController::class, 'update'])->name('pesanan.update');
-    Route::get('keuangan', [KeuanganController::class, 'riwayatKeuangan'])->name('keuangan');
+    Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
+    Route::get('/keuangan', [KeuanganController::class, 'riwayatKeuangan'])->name('keuangan');
 
+    // Harga
+    Route::get('/harga', [HargaController::class, 'harga'])->name('harga');
+    Route::get('/harga/create', [HargaController::class, 'create'])->name('harga.create');
+    Route::post('/harga', [HargaController::class, 'store'])->name('harga.store');
+    Route::get('/harga/{id}/edit', [HargaController::class, 'edit'])->name('harga.edit');
+    Route::put('/harga/{id}', [HargaController::class, 'update'])->name('harga.update');
+    Route::delete('/harga/{id}', [HargaController::class, 'destroy'])->name('harga.destroy');
 });

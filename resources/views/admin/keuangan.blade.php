@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Kelola Keuangan</title>
   <style>
     body {
@@ -32,7 +32,7 @@
       margin: auto;
     }
 
-    h1 {
+    h1, h2 {
       color: #2c3e50;
       margin-bottom: 20px;
     }
@@ -48,18 +48,23 @@
     table {
       width: 100%;
       border-collapse: collapse;
+      font-family: Arial, sans-serif;
       margin-top: 20px;
     }
 
     th, td {
-      padding: 12px;
-      text-align: left;
+      padding: 12px 15px;
       border: 1px solid #ddd;
+      text-align: left;
     }
 
     th {
       background-color: #4ac6e8;
       color: white;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
     }
 
     .filter-form {
@@ -128,7 +133,6 @@
         <div>
           <label for="tanggal">Pilih Bulan/Tahun:</label><br>
           <div id="filter-options">
-            <!-- Dropdown Bulan -->
             <div id="bulan-dropdown" style="{{ request('filter') == 'bulan' ? '' : 'display:none' }}">
               <select name="bulan" id="bulan">
                 @foreach (range(1, 12) as $bln)
@@ -140,7 +144,6 @@
               </select>
             </div>
 
-            <!-- Dropdown Tahun -->
             <div id="tahun-dropdown" style="{{ request('filter') == 'tahun' ? '' : 'display:none' }}">
               <select name="tahun" id="tahun">
                 @for ($year = 2023; $year <= \Carbon\Carbon::now()->year; $year++)
@@ -151,12 +154,17 @@
           </div>
         </div>
 
-        <div>
+        <div style="flex: 1;">
+          <label for="search">Cari Nama Pembeli:</label><br>
+          <input type="text" name="search" id="search" placeholder="Masukkan nama" value="{{ request('search') }}">
+        </div>
+
+        <div style="align-self: end;">
           <button type="submit">Tampilkan</button>
         </div>
       </form>
 
-      <!-- Tabel Transaksi -->
+      <!-- Tabel Dinamis (Blade Laravel) -->
       <table>
         <thead>
           <tr>
@@ -164,6 +172,14 @@
             <th>Nama Pembeli</th>
             <th>Total Transaksi</th>
             <th>Status Pembayaran</th>
+            <tbody>
+          <tr><td>1</td><td>A_Fauzi</td><td>Rp 72.000</td><td>Selesai</td></tr>
+          <tr><td>2</td><td>Ahmad_KLL@</td><td>Rp 40.000</td><td>Selesai</td></tr>
+          <tr><td>3</td><td>"_*Aisyah</td><td>Rp 55.000</td><td>Selesai</td></tr>
+          <tr><td>4</td><td>_@Maulana</td><td>Rp 90.000</td><td>Selesai</td></tr>
+          <tr><td>5</td><td>$_Rahma</td><td>Rp 30.000</td><td>Selesai</td></tr>
+          <tr><td>6</td><td>D_@Kartika</td><td>Rp 120.000</td><td>Selesai</td></tr>
+        </tbody>
           </tr>
         </thead>
         <tbody>
@@ -182,13 +198,13 @@
         </tbody>
       </table>
 
+    
       <!-- Total Pemasukan -->
       <div style="margin-top: 20px;">
         <h3>Total Pemasukan: Rp {{ number_format($totalPemasukan, 0, ',', '.') }}</h3>
       </div>
     </div>
 
-    <!-- Link Kembali -->
     <a class="back-link" href="{{ route('admin.dashboard') }}">← Kembali ke Dashboard</a>
   </div>
 

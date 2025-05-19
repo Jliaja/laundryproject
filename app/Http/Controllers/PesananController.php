@@ -9,6 +9,23 @@ use App\Services\XenditService;
 
 class PesananController extends Controller
 {
+    public function index(Request $request)
+    { 
+    $query = Pesanan::query();
+
+    if ($request->has('search')) {
+        $query->where('nama_pelanggan', 'like', '%' . $request->search . '%');
+    }
+
+    if ($request->has('layanan') && $request->layanan != '') {
+        $query->where('layanan', 'like', '%' . $request->layanan . '%');
+    }
+
+    $pesanans = $query->get();
+
+    return view('admin.pesanan.index', compact('pesanans'));
+    }
+
     /**
      * Tampilkan form buat pesanan.
      */

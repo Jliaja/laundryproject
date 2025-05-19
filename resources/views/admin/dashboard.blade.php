@@ -176,6 +176,7 @@
     <div class="button-container">
       <a href="{{ route('admin.kelola') }}" class="action-btn">Kelola Pesanan</a>
       <a href="{{ route('admin.keuangan') }}" class="action-btn">Kelola Keuangan</a>
+      <a href="{{ route('admin.harga') }}" class="action-btn">Kelola Harga pesanan</a>
     </div>
   </div>
 
