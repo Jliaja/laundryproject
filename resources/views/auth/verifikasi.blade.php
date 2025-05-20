@@ -5,7 +5,12 @@
   <title>Verifikasi Kode</title>
   <style>
     body {
-      background-color: #4ac6e8;
+      background: 
+        linear-gradient(rgba(220, 233, 249, 0.85), rgba(244, 248, 251, 0.85)),
+        url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-dark);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -15,7 +20,7 @@
     }
 
     .verify-box {
-      background-color: #d9d9d9;
+      background-color: #ffffff;
       padding: 30px;
       border-radius: 20px;
       text-align: center;
@@ -34,7 +39,7 @@
       margin: 10px 0;
       border: none;
       border-radius: 10px;
-      background-color: #4ac6e8;
+      background-color: #ffffff;
       font-style: italic;
       font-weight: bold;
     }
@@ -42,7 +47,7 @@
     .verify-box button {
       padding: 10px 20px;
       margin-top: 10px;
-      background-color: #000;
+      background-color: #2d8cff;
       color: #fff;
       border: none;
       border-radius: 10px;
@@ -53,20 +58,36 @@
     .message {
       margin-top: 15px;
       font-size: 14px;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .success {
+      background: #e3ffe8;
+      color: green;
+    }
+
+    .error-message {
+      background: #ffecec;
+      color: red;
     }
   </style>
 </head>
 <body>
-  <form class="verify-box" action="{{ route('verifikasi.submit') }}" method="POST">
+  <form class="verify-box" action="{{ route('verifikasi.kode') }}" method="POST">
     @csrf
-    <img src="key-icon.png" alt="Key Icon">
     <h3>Masukkan Kode Verifikasi</h3>
-    <input type="text" name="kode" placeholder="Kode 6 Digit" required>
+    <input type="text" name="kode" placeholder="Kode 5 Digit" required>
     <button type="submit">Verifikasi</button>
 
-    <div class="message">
-      {!! $pesan ?? '' !!}
-    </div>
+    {{-- Pesan Session --}}
+    @if(session('pesan'))
+      <div class="message success">{{ session('pesan') }}</div>
+    @endif
+
+    @if(session('error'))
+      <div class="message error-message">{{ session('error') }}</div>
+    @endif
   </form>
 </body>
 </html>

@@ -1,37 +1,51 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PesananController;
-use App\Http\Controllers\VerifController;
+use App\Http\Controllers\ForgetPassController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HargaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\KeuanganController;
-use App\Http\Controllers\XenditController;
-use App\Http\Middleware\CekLogin;
-use App\Models\Transaksi;
+use App\Http\Controllers\MidtransController;
 
-// Halaman Utama
-Route::get('/', function () {
-    return view('welcome');
-});
+/*
+|--------------------------------------------------------------------------
+| Route Public - Tanpa Login
+|--------------------------------------------------------------------------
+*/
 
-// Route untuk login
+// Halaman Login & Logout
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Route untuk dashboard (hanya bisa diakses setelah login)
+// Registrasi Pengguna Baru
+Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
+
+// Lupa Password
+Route::get('/lupa-password', [ForgetPassController::class, 'formEmail'])->name('kirimemail');
+Route::post('/kirim-kode', [ForgetPassController::class, 'kirimKode'])->name('verifikasi.kirim.kode');
+
+Route::get('/verifikasi', [ForgetPassController::class, 'formKode'])->name('verifikasi');
+Route::post('/verifikasi', [ForgetPassController::class, 'verifikasiKode'])->name('verifikasi.kode');
+
+Route::get('/reset-password', [ForgetPassController::class, 'formResetPassword'])->name('password.reset.form');
+Route::post('/reset-password', [ForgetPassController::class, 'resetPassword'])->name('password.reset');
+
+/*
+|--------------------------------------------------------------------------
+| Route User - Setelah Login
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth'])->group(function () {
-    // Dashboard Pengguna
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('user.dashboard');
-    
-    // Ganti Password
-    Route::get('/ganti-password', [UserController::class, 'gantiPasswordForm'])->name('user.password.form');
-    Route::post('/ganti-password', [UserController::class, 'updatePassword'])->name('user.change-password');
 
     // Pesanan
     Route::get('/buatpesanan', [PesananController::class, 'create'])->name('user.buatpesanan');
@@ -39,34 +53,26 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/daftarpesanan', [PesananController::class, 'daftarpesanan'])->name('user.daftarpesanan');
     Route::get('/confirmpesanan/{id}', [PesananController::class, 'confirm'])->name('user.confirmpesanan');
     Route::get('/riwayatpesanan', [PesananController::class, 'history'])->name('user.historypesanan');
+
+    // Pengambilan
     Route::get('/pilihpengambilan/{pesanan_id}', [PesananController::class, 'showPilihPengambilan'])->name('user.pilihpengambilan');
     Route::post('/pilihpengambilan', [PesananController::class, 'submitPilihPengambilan'])->name('user.pilihpengambilan.submit');
 
-    // Profil Pengguna
+    // Pembayaran
+    Route::get('/bayar/{id}', [PesananController::class, 'bayar'])->name('user.bayar');
+    Route::post('/bayar/{id}', [PesananController::class, 'prosesBayar'])->name('user.bayar.submit');
+
+    // Profil
     Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
     Route::get('/user/profile/edit', [UserController::class, 'editProfile'])->name('user.profile.edit');
     Route::put('/user/profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
-
-
 });
 
-// Route untuk register
-Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
-
-// 1. Form input email (lupa password)
-Route::get('/lupa-password', [VerifController::class, 'formEmail'])->name('kirimemail'); // Menampilkan form untuk input email
-Route::post('/kirim-kode', [VerifController::class, 'kirimKode'])->name('verifikasi.kirim.kode'); // Mengirim kode OTP ke email
-
-// 2. Verifikasi kode OTP
-Route::get('/verifikasi', [VerifController::class, 'formKode'])->name('verifikasi'); // Menampilkan form input OTP
-Route::post('/verifikasi', [VerifController::class, 'verifikasiKode'])->name('verifikasi.submit'); // Mengecek kecocokan kode OTP
-
-// 3. Reset password
-Route::get('/resetpassword', [VerifController::class, 'formResetPassword'])->name('resetpassword'); // Menampilkan form reset password
-Route::post('/resetpassword', [VerifController::class, 'resetPassword'])->name('password.reset'); // Menyimpan password baru
-
-// ADMIN
+/*
+|--------------------------------------------------------------------------
+| Route Admin
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/kelola', [AdminController::class, 'kelolaPesanan'])->name('kelola');
@@ -81,4 +87,13 @@ Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->
     Route::get('/harga/{id}/edit', [HargaController::class, 'edit'])->name('harga.edit');
     Route::put('/harga/{id}', [HargaController::class, 'update'])->name('harga.update');
     Route::delete('/harga/{id}', [HargaController::class, 'destroy'])->name('harga.destroy');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Fallback
+|--------------------------------------------------------------------------
+*/
+Route::fallback(function () {
+    return redirect('/login')->with('error');
 });

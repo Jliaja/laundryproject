@@ -6,7 +6,12 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #f5f7fa, #c3cfe2);
+      background: 
+        linear-gradient(rgba(220, 233, 249, 0.85), rgba(244, 248, 251, 0.85)),
+        url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-dark);
+      min-height: 100vh;
       margin: 0;
       padding: 40px;
     }

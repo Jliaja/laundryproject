@@ -5,7 +5,12 @@
   <title>Registrasi</title>
   <style>
     body {
-      background: linear-gradient(to right, #6dd5fa, #2980b9);
+      background: 
+        linear-gradient(rgba(220, 233, 249, 0.85), rgba(244, 248, 251, 0.85)),
+        url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-dark);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;

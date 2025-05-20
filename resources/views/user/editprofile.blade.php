@@ -7,7 +7,12 @@
     /* Styling form */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #4ac6e8, #a1e0f3);
+      background: 
+        linear-gradient(rgba(220, 233, 249, 0.85), rgba(244, 248, 251, 0.85)),
+        url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-dark);
+      min-height: 100vh;
       margin: 0;
       padding: 0;
     }
@@ -117,6 +122,7 @@
     </form>
 
     <a href="{{ route('user.profile') }}" class="back-link">⬅ Kembali ke Profil</a>
+    <a href="{{ route('user.dashboard') }}" class="back-link">⬅ Kembali ke Dashboard</a>
   </div>
 
 </body>

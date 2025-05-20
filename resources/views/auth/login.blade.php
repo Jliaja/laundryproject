@@ -1,6 +1,11 @@
 <style>
   body {
-    background: linear-gradient(to right, #1c92d2, #f2fcfe);
+    background: 
+        linear-gradient(rgba(220, 233, 249, 0.85), rgba(244, 248, 251, 0.85)),
+        url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-dark);
+      min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -19,8 +24,8 @@
   }
 
   .login-box img {
-    width: 60px;
-    margin-bottom: 20px;
+    width: 120px;
+    margin-bottom: 40px;
   }
 
   .login-box input[type="text"],
@@ -95,7 +100,7 @@
   <form class="login-box" action="{{ route('login.submit') }}" method="POST">
     @csrf
 
-    <img src="{{ asset('storage/usericon.jpeg') }}" alt="User Icon">
+    <img src="{{ asset('storage/images/login.png') }}" alt="User Icon">
 
     <input type="text" name="username" placeholder="USERNAME" value="{{ old('username') }}" required>
     @error('username')
