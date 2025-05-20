@@ -1,13 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MidtransController;
+use App\Http\Controllers\PaymentController;
+use Illuminate\Support\Facades\Route;
 
-
-// Route::post('/midtrans/callback', [MidtransController::class, 'callback']);
-
-Route::post('/test-post', function () {
-    return response()->json(['message' => 'POST berhasil']);
-});
+Route::post('/midtrans/callback', [MidtransController::class, 'callback']);
+Route::post('/payment/create-transaction', [PaymentController::class, 'createTransaction']);

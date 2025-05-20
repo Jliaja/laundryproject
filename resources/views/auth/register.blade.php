@@ -34,8 +34,8 @@
     }
 
     .register-box img {
-      width: 60px;
-      margin: 0 auto 20px;
+      width: 120px;
+      margin: 0 auto 40px;
       display: block;
     }
 
@@ -108,7 +108,7 @@
 <body>
 
   <div class="register-box">
-    <img src="{{ asset('storage/usericon.jpeg') }}" alt="User Icon">
+    <img src="{{ asset('storage/images/login.png') }}" alt="User Icon">
     <h2>Formulir Registrasi</h2>
     <form method="POST" action="{{ route('register') }}">
       @csrf

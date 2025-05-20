@@ -103,15 +103,15 @@
       <label for="jumlah">Jumlah (kg)</label>
       <input type="number" id="jumlah" name="jumlah" min="0.1" step="0.1" required>
 
-      <label for="tanggal">Tanggal</label>
-      <input type="date" id="tanggal" name="tanggal" required>
-
       <!-- Input tersembunyi untuk menyimpan total harga -->
       <input type="hidden" id="hidden-total-harga" name="total_harga">
 
       <div class="total-price">
         Total Harga: Rp <span id="total-harga">0</span>
       </div>
+
+      <label for="tanggal">Tanggal</label>
+      <input type="date" id="tanggal" name="tanggal" required>
 
       <button type="submit">Kirim Pesanan</button>
     </form>

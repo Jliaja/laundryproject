@@ -99,23 +99,29 @@
 </head>
 <body>
   <form class="reset-box" action="{{ route('password.reset') }}" method="POST">
-    @csrf
-    <h1>Reset Password</h1>
+  @csrf
+  <h1>Reset Password</h1>
 
-    <input type="password" name="password" placeholder="Password baru" required>
-    <input type="password" name="password_confirmation" placeholder="Ulangi password" required>
+  <input type="password" name="password" placeholder="Password baru" required>
+  @error('password')
+    <div class="message error-message">{{ $message }}</div>
+  @enderror
 
-    <button type="submit">Reset Password</button>
+  <input type="password" name="password_confirmation" placeholder="Ulangi password" required>
+  @error('password_confirmation')
+    <div class="message error-message">{{ $message }}</div>
+  @enderror
 
-    {{-- Pesan error jika ada --}}
-    @if(session('error'))
-      <div class="message error-message">{{ session('error') }}</div>
-    @endif
+  <button type="submit">Reset Password</button>
 
-    {{-- Pesan sukses jika ada --}}
-    @if(session('success'))
-      <div class="message success-message">{{ session('success') }}</div>
-    @endif
-  </form>
+  @if(session('error'))
+    <div class="message error-message">{{ session('error') }}</div>
+  @endif
+
+  @if(session('success'))
+    <div class="message success-message">{{ session('success') }}</div>
+  @endif
+</form>
+
 </body>
 </html>

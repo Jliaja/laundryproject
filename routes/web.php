@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\MidtransController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,8 +26,8 @@ Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
-
-// Route::post('/midtrans/callback', [MidtransController::class, 'callback']);
+Route::post('/payment/create-transaction', [PaymentController::class, 'createTransaction']);
+Route::post('/midtrans/callback', [MidtransController::class, 'callback']);
 
 
 
