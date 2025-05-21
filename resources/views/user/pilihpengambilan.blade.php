@@ -140,6 +140,7 @@
             </form>
         @else
             <div class="form-container" id="form-container">
+                <div style="background: #f8f9fa; padding: 15px; border: 1px solid #ccc; margin-bottom: 20px;">
                 <form action="{{ route('user.pilihpengambilan.submit') }}" method="POST">
                     @csrf
 
@@ -155,10 +156,10 @@
                     </div>
 
                     <!-- Jika memilih antar jemput, tampilkan input alamat -->
-                    <div id="alamat" style="display:none;" class="form-group">
-                        <label for="alamat">Alamat Pengambilan:</label>
-                        <input type="text" name="alamat" value="{{ $address }}" placeholder="Masukkan alamat">
-                    </div>
+                    <div id="address" style="display:none;" class="form-group">
+    <label for="alamat">Alamat Pengambilan:</label>
+    <input type="text" name="alamat" value="{{ old('alamat', $address ?? '') }}" placeholder="Masukkan alamat">
+</div>
 
                     <button type="submit">Kirim</button>
                 </form>

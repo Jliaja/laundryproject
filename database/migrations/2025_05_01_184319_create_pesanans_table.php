@@ -13,8 +13,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('nama_pelanggan');
             $table->string('layanan');
-            $table->float('jumlah');
-            $table->decimal('total_harga', 10, 2); // Presisi untuk nilai uang
+            $table->float('jumlah')->nullable(); 
+            $table->decimal('total_harga')->nullable();  // Presisi untuk nilai uang
             $table->date('tanggal');
             $table->string('status')->default('pending');
             $table->timestamps();

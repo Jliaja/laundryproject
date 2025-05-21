@@ -39,32 +39,23 @@ class MidtransController extends Controller
 
             switch ($transactionStatus) {
                 case 'capture':
-                    if ($fraudStatus == 'challenge') {
-                        $pesanan->status_pembayaran = 'pending';
-                        $pesanan->status = 'pending';
-                    } elseif ($fraudStatus == 'accept') {
-                        $pesanan->status_pembayaran = 'selesai';
-                        $pesanan->status = 'selesai';
-                    }
+                    $pesanan->status_pembayaran = $fraudStatus === 'challenge' ? 'pending' : 'selesai';
+                    $pesanan->status = $fraudStatus === 'challenge' ? 'pending' : 'selesai';
                     break;
-
                 case 'settlement':
                     $pesanan->status_pembayaran = 'selesai';
                     $pesanan->status = 'selesai';
                     break;
-
                 case 'pending':
                     $pesanan->status_pembayaran = 'pending';
                     $pesanan->status = 'pending';
                     break;
-
                 case 'deny':
                 case 'cancel':
                 case 'expire':
                     $pesanan->status_pembayaran = 'gagal';
                     $pesanan->status = 'batal';
                     break;
-
                 default:
                     Log::warning("Status transaksi tidak dikenali: $transactionStatus");
                     break;
@@ -73,7 +64,6 @@ class MidtransController extends Controller
             $pesanan->save();
 
             return response()->json(['message' => 'Callback berhasil diproses']);
-
         } catch (\Exception $e) {
             Log::error('Callback Error: ' . $e->getMessage());
             return response()->json(['message' => 'Terjadi kesalahan'], 500);

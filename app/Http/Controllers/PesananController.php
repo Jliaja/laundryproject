@@ -3,84 +3,71 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pesanan;
+use App\Models\Harga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Services\MidtransService;
-use Midtrans\Notification;
 
 class PesananController extends Controller
 {
-    // Form pemesanan
+    /**
+     * Tampilkan form pemesanan.
+     */
     public function create()
     {
-        return view('user.buatpesanan');
+        $hargas = Harga::all();
+        return view('user.buatpesanan', compact('hargas'));
     }
 
-    // Simpan pesanan baru
+    /**
+     * Simpan pesanan baru dari user.
+     */
     public function store(Request $request)
     {
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
-        $user = Auth::user();
-
         $request->validate([
             'layanan' => 'required|string',
-            'jumlah' => 'required|numeric|min:1',
             'tanggal' => 'required|date',
         ]);
 
-        $hargaPerKg = [
-            'Cuci Kering' => 5000,
-            'Cuci Basah' => 6000,
-            'Setrika' => 4000,
-            'Lengkap (Cuci + Setrika)' => 8000
-        ];
+        $user = Auth::user();
 
-        $layanan = $request->input('layanan');
-        $jumlah = $request->input('jumlah');
-        $totalHarga = $hargaPerKg[$layanan] * $jumlah;
-
-        $orderId = 'ORDER-' . time() . '-' . rand(1000, 9999); // Order ID unik untuk Midtrans
+        $orderId = 'ORDER-' . time() . '-' . rand(1000, 9999); // Order ID unik
 
         $pesanan = Pesanan::create([
             'user_id' => $user->id,
             'nama_pelanggan' => $user->username,
-            'layanan' => $layanan,
-            'jumlah' => $jumlah,
+            'layanan' => $request->layanan,
+            'jumlah' => 0, // Diisi nanti oleh admin
             'tanggal' => $request->tanggal,
-            'total_harga' => $totalHarga,
-            'status' => 'pending', // status proses laundry: pending → selesai
-            'status_pembayaran' => 'pending', // status pembayaran: pending → selesai → gagal
+            'total_harga' => 0, // Diisi nanti oleh admin
+            'status' => 'pending', // Status proses laundry
+            'status_pembayaran' => 'pending', // Status pembayaran
             'order_id' => $orderId
         ]);
 
         return redirect()->route('user.confirmpesanan', ['id' => $pesanan->id])
-                        ->with('success', 'Pesanan berhasil dibuat, silakan lanjutkan pembayaran.');
+                         ->with('success', 'Pesanan berhasil dibuat, silakan lanjutkan pembayaran.');
     }
 
-    // Tampilkan halaman konfirmasi pesanan
+    /**
+     * Tampilkan halaman konfirmasi pesanan.
+     */
     public function confirm($id)
     {
         $pesanan = Pesanan::findOrFail($id);
         return view('user.confirmpesanan', compact('pesanan'));
     }
 
-    // Proses pembayaran via Midtrans
-    public function bayar($id, MidtransService $midtrans)
-    {
-        $pesanan = Pesanan::findOrFail($id);
+    /**
+     * Proses pembayaran via Midtrans.
+     */
 
-        if ($pesanan->status_pembayaran === 'selesai') {
-            return redirect()->route('user.daftarpesanan')->with('error', 'Pesanan sudah dibayar.');
-        }
-
-        $paymentUrl = $midtrans->createPayment($pesanan);
-        return redirect($paymentUrl);
-    }
-
-    // Tampilkan daftar semua pesanan user
+    /**
+     * Tampilkan daftar semua pesanan milik user.
+     */
     public function daftarpesanan()
     {
         $user = Auth::user();
@@ -88,48 +75,67 @@ class PesananController extends Controller
         return view('user.daftarpesanan', compact('pesanan'));
     }
 
-    // Form pilih metode pengambilan
-// Tampilkan halaman pemilihan metode pengambilan
-public function showPilihPengambilan($pesanan_id)
+    /**
+     * Tampilkan form pemilihan metode pengambilan (antar/ambil sendiri).
+     */
+    public function showPilihPengambilan($pesanan_id)
 {
     $pesanan = Pesanan::findOrFail($pesanan_id);
 
-    // Jika user yang login bukan pemilik pesanan, tolak akses
-    if ($pesanan->user_id !== Auth::id()) {
-        return redirect()->route('user.daftarpesanan')->with('error', 'Akses ditolak.');
-    }
+    // Ambil data user yang sedang login
+    $user = auth()->user();
 
-    // Ambil alamat dari user jika ada
-    $address = Auth::user()->alamat ?? '';
-
-    return view('user.pilihpengambilan', compact('pesanan', 'address'));
+    // Kirim data user ke view, termasuk alamatnya
+    return view('user.pilihpengambilan', [
+        'pesanan' => $pesanan,
+        'user' => $user,
+        'address' => $user->address ?? '',  // pakai alamat user, kalau kosong kasih string kosong
+    ]);
 }
 
-
-// Simpan pilihan metode pengambilan
-public function submitPilihPengambilan(Request $request)
+    /**
+     * Simpan pilihan metode pengambilan.
+     */
+    public function submitPilihPengambilan(Request $request)
 {
     $request->validate([
         'pesanan_id' => 'required|exists:pesanans,id',
         'metode' => 'required|in:antar,ambil',
-        'alamat' => 'nullable|string|max:255',
+        'alamat' => $request->metode === 'antar' ? 'required|string|max:255' : 'nullable',
     ]);
 
     $pesanan = Pesanan::findOrFail($request->pesanan_id);
-
-    if ($pesanan->user_id !== Auth::id()) {
-        return redirect()->route('user.daftarpesanan')->with('error', 'Akses ditolak.');
-    }
-
     $pesanan->metode_pengambilan = $request->metode;
-    if ($request->metode === 'antar') {
-        $pesanan->alamat_pengambilan = $request->alamat;
-        $pesanan->total_harga += 5000; // Tambah ongkir 5000
-    }
+    $pesanan->alamat_pengambilan = $request->alamat ?? null;
     $pesanan->save();
 
-    return redirect()->route('user.pilihpengambilan', $pesanan->id)->with('success', 'Metode pengambilan berhasil disimpan.');
+    return back()->with('success', 'Metode pengambilan berhasil disimpan.');
 }
+    public function update(Request $request, $id)
+{
+    $pesanan = Pesanan::findOrFail($id);
 
+    // Update status jika ada input
+    if ($request->has('status')) {
+        $pesanan->status = $request->input('status');
+    }
+
+    // Update jumlah jika ada input
+    if ($request->has('jumlah')) {
+        $pesanan->jumlah = $request->input('jumlah');
+
+        // Cek harga per Kg sesuai layanan
+        $hargaRecord = Harga::where('layanan', $pesanan->layanan)->first();
+        if ($hargaRecord) {
+            $pesanan->total_harga = $pesanan->jumlah * $hargaRecord->hargaPerKg;
+        } else {
+            $pesanan->total_harga = 0; // Default jika harga tidak ditemukan
+        }
+    }
+
+    $pesanan->save();
+
+    return redirect()->back()->with('success', 'Pesanan berhasil diperbarui');
+}
 
 }

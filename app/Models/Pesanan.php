@@ -21,7 +21,7 @@ class Pesanan extends Model
     'status',
     'status_pembayaran',
     'metode_pengambilan',
-    'jarak',
+    'address',
     'invoice_url',
     'order_id'
 ];

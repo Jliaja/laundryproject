@@ -95,64 +95,62 @@
     <div class="card">
       <h1>Daftar Pesanan</h1>
 
-      <!-- Form Pencarian dan Filter -->
-      <form method="GET" action="{{ route('admin.pesanan.index') }}" class="filter-form">
-        <input type="text" name="search" placeholder="Cari nama pelanggan..." value="{{ request('search') }}">
-        <select name="layanan">
-          <option value="">Semua Layanan</option>
-          <option value="Cuci Kering" {{ request('layanan') == 'Cuci Kering' ? 'selected' : '' }}>Cuci Kering</option>
-          <option value="Cuci Basah" {{ request('layanan') == 'Cuci Basah' ? 'selected' : '' }}>Cuci Basah</option>
-          <option value="Setrika" {{ request('layanan') == 'Setrika' ? 'selected' : '' }}>Setrika</option>
-          <option value="Lengkap (Cuci + Setrika)" {{ request('layanan') == 'Lengkap (Cuci + Setrika)' ? 'selected' : '' }}>Lengkap (Cuci + Setrika)</option>
-        </select>
-        <button type="submit">Cari</button>
-      </form>
-
       <!-- Tabel Daftar Pesanan -->
       <table>
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Nama Pelanggan</th>
-            <th>No Pesanan</th>
-            <th>Berat</th>
-            <th>Jenis Layanan</th>
-            <th>Paket</th>
-            <th>Status</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          @forelse ($pesanans as $pesanan)
-            <tr>
-              <td>{{ $loop->iteration }}</td>
-              <td>{{ $pesanan->nama_pelanggan }}</td>
-              <td>#{{ $pesanan->id }}</td>
-              <td>{{ $pesanan->berat ?? '3 kg' }}</td>
-              <td>{{ $pesanan->layanan }}</td>
-              <td>{{ $pesanan->paket ?? 'Laundry Express' }}</td>
-              <td>
-                <form action="{{ route('admin.pesanan.update', $pesanan->id) }}" method="POST">
-                  @csrf
-                  @method('PUT')
-                  <select name="status">
-                    <option value="dicuci" {{ $pesanan->status == 'dicuci' ? 'selected' : '' }}>Dicuci</option>
-                    <option value="dijemur" {{ $pesanan->status == 'dijemur' ? 'selected' : '' }}>Dijemur</option>
-                    <option value="disetrika" {{ $pesanan->status == 'disetrika' ? 'selected' : '' }}>Disetrika</option>
-                    <option value="selesai" {{ $pesanan->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                  </select>
-              </td>
-              <td>
-                  <button type="submit">Ubah Status</button>
-                </form>
-              </td>
-            </tr>
-          @empty
-            <tr>
-              <td colspan="8" style="text-align: center;">Tidak ada data pesanan.</td>
-            </tr>
-          @endforelse
-        </tbody>
+  <tr>
+    <th>No</th>
+    <th>Nama Pelanggan</th>
+    <th>No Pesanan</th>
+    <th>Jumlah</th>
+    <th>Jenis Layanan</th>
+    <th>Paket</th>
+    <th>Status</th>
+    <th>Aksi</th>
+  </tr>
+</thead>
+<tbody>
+  @forelse ($pesanans as $pesanan)
+    <tr>
+      <td>{{ $loop->iteration }}</td>
+      <td>{{ $pesanan->nama_pelanggan }}</td>
+      <td>#{{ $pesanan->id }}</td>
+
+      <!-- Form Update Jumlah -->
+      <td>
+        <form action="{{ route('admin.pesanan.update', $pesanan->id) }}" method="POST" style="display: flex; gap: 5px;">
+          @csrf
+          @method('PUT')
+          <input type="text" name="jumlah" value="{{ $pesanan->jumlah ?? '' }}" style="width: 60px;">
+          <button type="submit">Ubah</button>
+        </form>
+      </td>
+
+      <td>{{ $pesanan->layanan }}</td>
+      <td>{{ $pesanan->paket ?? 'Laundry Express' }}</td>
+
+      <!-- Form Update Status -->
+      <td>
+        <form action="{{ route('admin.pesanan.update', $pesanan->id) }}" method="POST">
+          @csrf
+          @method('PUT')
+          <select name="status">
+            <option value="hitung berat dan harga" {{ $pesanan->status == 'hitung berat dan harga' ? 'selected' : '' }}>Hitung berat dan harga</option>
+            <option value="Pending" {{ $pesanan->status == 'Pending' ? 'selected' : '' }}>Pending</option>
+            <option value="diproses" {{ $pesanan->status == 'diproses' ? 'selected' : '' }}>Di Proses</option>
+            <option value="selesai" {{ $pesanan->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
+          </select>
+      </td>
+      <td>
+          <button type="submit">Ubah</button>
+        </form>
+      </td>
+    </tr>
+  @empty
+    <tr>
+      <td colspan="8" style="text-align: center;">Tidak ada data pesanan.</td>
+    </tr>
+  @endforelse
+</tbody>
       </table>
     </div>
   </div>

@@ -11,33 +11,46 @@ class PaymentController extends Controller
 {
     public function createTransaction(Request $request)
     {
-        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
         Config::$isSanitized = true;
         Config::$is3ds = true;
 
         $pesanan = Pesanan::find($request->pesanan_id);
-        if (!$pesanan) {
-            return response()->json(['error' => 'Pesanan tidak ditemukan'], 404);
-        }
+        if (!$pesanan->order_id) {
+    $pesanan->order_id = 'ORDER-' . $pesanan->id . '-' . time();
+    $pesanan->save();
+} else {
+    // Kalau mau force buat baru setiap transaksi, bisa override
+    $pesanan->order_id = 'ORDER-' . $pesanan->id . '-' . time();
+    $pesanan->save();
+}
 
-        $params = [
-            'transaction_details' => [
-                'order_id' => $pesanan->order_id,
-                'gross_amount' => $pesanan->total_harga,
-            ],
-            'customer_details' => [
-                'first_name' => $pesanan->nama_pelanggan,
-                'email' => $request->email,
-                'phone' => $request->phone,
-            ],
-        ];
+$params = [
+    'transaction_details' => [
+        'order_id' => $pesanan->order_id,
+        'gross_amount' => (int) $pesanan->total_harga,
+    ],
+    'customer_details' => [
+        'first_name' => $pesanan->nama_pelanggan,
+        'email' => $request->email ?? $pesanan->user->email ?? '',
+        'phone' => $request->phone ?? '',
+    ],
+];
+
 
         try {
             $snapToken = Snap::getSnapToken($params);
             return response()->json(['snap_token' => $snapToken]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            \Log::error('Midtrans Snap Token Error: ' . $e->getMessage());
+            return response()->json(['error' => 'Gagal mendapatkan snap token'], 500);
         }
+    }
+
+    public function showBayarPage($id)
+    {
+        $pesanan = Pesanan::findOrFail($id);
+        return view('user.pembayaran', compact('pesanan'));
     }
 }

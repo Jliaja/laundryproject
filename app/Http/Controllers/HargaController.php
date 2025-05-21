@@ -25,12 +25,18 @@ class HargaController extends Controller
     {
         $request->validate([
             'jenis_layanan' => 'required|string|max:255',
-            'harga_per_kg' => 'required|numeric|min:0',
+            'hargaPerKg
+
+' => 'required|numeric|min:0',
         ]);
 
         Harga::create([
             'jenis_layanan' => $request->jenis_layanan,
-            'harga_per_kg' => $request->harga_per_kg,
+            'hargaPerKg
+
+' => $request->hargaPerKg
+
+,
         ]);
 
         return redirect()->route('admin.harga')->with('success', 'Harga berhasil ditambahkan.');
@@ -48,13 +54,19 @@ class HargaController extends Controller
     {
         $request->validate([
             'jenis_layanan' => 'required|string|max:255',
-            'harga_per_kg' => 'required|numeric|min:0',
+            'hargaPerKg
+
+' => 'required|numeric|min:0',
         ]);
 
         $harga = Harga::findOrFail($id);
         $harga->update([
             'jenis_layanan' => $request->jenis_layanan,
-            'harga_per_kg' => $request->harga_per_kg,
+            'hargaPerKg
+
+' => $request->hargaPerKg
+
+,
         ]);
 
         return redirect()->route('admin.harga.harga')->with('success', 'Harga berhasil diperbarui.');

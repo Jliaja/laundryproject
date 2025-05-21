@@ -196,7 +196,6 @@
       <ul>
         <li><strong>Nama Pelanggan:</strong> {{ $pesanan->nama_pelanggan }}</li>
         <li><strong>Layanan:</strong> {{ $pesanan->layanan }}</li>
-        <li><strong>Jumlah:</strong> {{ $pesanan->jumlah }} kg</li>
         <li><strong>Tanggal:</strong> {{ $pesanan->tanggal }}</li>
       </ul>
 

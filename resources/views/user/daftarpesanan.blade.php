@@ -118,6 +118,7 @@
                 <th>Total Harga</th>
                 <th>Tanggal</th>
                 <th>Status Pesanan</th>
+                
                 <th>Status Pembayaran</th>
                 <th>Aksi</th>
             </tr>
@@ -150,7 +151,7 @@
                     </td>
                     <td>
                         @if($p->status_pembayaran == 'pending')
-                            <a href="{{ route('user.bayar', ['id' => $p->id]) }}" class="pay-button">Bayar</a>
+                            <a href="{{ route('user.pembayaran', ['id' => $p->id]) }}" class="pay-button">Bayar</a>
                         @else
                             -
                         @endif

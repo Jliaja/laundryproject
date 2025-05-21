@@ -10,7 +10,7 @@
         linear-gradient(rgba(220, 233, 249, 0.85), rgba(244, 248, 251, 0.85)),
         url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
       background-size: cover;
-      color: var(--text-dark);
+      color: #2c3e50;
       min-height: 100vh;
       margin: 0;
       padding: 40px;
@@ -27,7 +27,6 @@
 
     h2 {
       text-align: center;
-      color: #2c3e50;
       margin-bottom: 25px;
     }
 
@@ -35,10 +34,9 @@
       font-weight: bold;
       display: block;
       margin-top: 15px;
-      color: #34495e;
     }
 
-    input, select {
+    select, input {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
@@ -75,13 +73,6 @@
     .back-link:hover {
       text-decoration: underline;
     }
-
-    .total-price {
-      font-size: 18px;
-      font-weight: bold;
-      color: #27ae60;
-      margin-top: 20px;
-    }
   </style>
 </head>
 <body>
@@ -94,21 +85,10 @@
       <label for="layanan">Layanan</label>
       <select id="layanan" name="layanan" required>
         <option value="">-- Pilih Layanan --</option>
-        <option value="Cuci Kering" data-harga="5000">Cuci Kering</option>
-        <option value="Cuci Basah" data-harga="6000">Cuci Basah</option>
-        <option value="Setrika" data-harga="4000">Setrika</option>
-        <option value="Lengkap (Cuci + Setrika)" data-harga="8000">Lengkap (Cuci + Setrika)</option>
+        @foreach($hargas as $harga)
+          <option value="{{ $harga->layanan }}">{{ $harga->layanan }}</option>
+        @endforeach
       </select>
-
-      <label for="jumlah">Jumlah (kg)</label>
-      <input type="number" id="jumlah" name="jumlah" min="0.1" step="0.1" required>
-
-      <!-- Input tersembunyi untuk menyimpan total harga -->
-      <input type="hidden" id="hidden-total-harga" name="total_harga">
-
-      <div class="total-price">
-        Total Harga: Rp <span id="total-harga">0</span>
-      </div>
 
       <label for="tanggal">Tanggal</label>
       <input type="date" id="tanggal" name="tanggal" required>
@@ -118,43 +98,6 @@
 
     <a class="back-link" href="{{ route('user.dashboard') }}">← Kembali ke Dashboard</a>
   </div>
-
-  <script>
-    document.getElementById('layanan').addEventListener('change', updateTotal);
-    document.getElementById('jumlah').addEventListener('input', updateTotal);
-
-    function updateTotal() {
-      const layanan = document.getElementById('layanan');
-      const jumlah = parseFloat(document.getElementById('jumlah').value);
-      const hargaPerKg = layanan.options[layanan.selectedIndex].getAttribute('data-harga');
-      const totalSpan = document.getElementById('total-harga');
-      const hiddenTotal = document.getElementById('hidden-total-harga');
-
-      // Debugging: Pastikan hargaPerKg dan jumlah memiliki nilai yang benar
-      console.log('Harga per Kg: ', hargaPerKg);
-      console.log('Jumlah: ', jumlah);
-
-      // Pastikan layanan dan harga ada dan jumlah valid
-      if (layanan.selectedIndex !== 0 && !isNaN(jumlah) && jumlah > 0 && hargaPerKg) {
-        const total = Math.round(jumlah * parseFloat(hargaPerKg));  // Pastikan parseFloat untuk harga
-        totalSpan.textContent = total.toLocaleString('id-ID');  // Format ke IDR
-        hiddenTotal.value = total;
-      } else {
-        totalSpan.textContent = '0';  // Jika input tidak valid
-        hiddenTotal.value = '';
-      }
-    }
-
-    // Panggil fungsi updateTotal untuk inisialisasi pertama kali
-    updateTotal();
-
-    // Fungsi untuk memastikan layanan sudah terpilih
-    window.onload = () => {
-      if (document.getElementById('layanan').value !== "") {
-        updateTotal(); // Panggil updateTotal jika sudah ada layanan yang dipilih
-      }
-    }
-  </script>
 
 </body>
 </html>

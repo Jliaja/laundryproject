@@ -41,9 +41,7 @@ Route::post('/verifikasi', [ForgetPassController::class, 'verifikasiKode'])->nam
 // 3. Reset Password
 Route::get('/reset-password', [ForgetPassController::class, 'formResetPassword'])->name('password.reset.form');
 Route::post('/reset-password', [ForgetPassController::class, 'resetPassword'])->name('password.reset');
-
-// Midtrans Payment
-Route::post('/payment/create-transaction', [PaymentController::class, 'createTransaction']);
+// 4. callback
 Route::post('/midtrans/callback', [MidtransController::class, 'callback']);
 
 /*
@@ -66,8 +64,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pilihpengambilan', [PesananController::class, 'submitPilihPengambilan'])->name('user.pilihpengambilan.submit');
 
     // Pembayaran
-    Route::get('/bayar/{id}', [PesananController::class, 'bayar'])->name('user.bayar');
-    Route::post('/bayar/{id}', [PesananController::class, 'prosesBayar'])->name('user.bayar.submit');
+    Route::get('/pembayaran/{id}', [PaymentController::class, 'showBayarPage'])->name('user.pembayaran');
+    Route::post('/pembayaran/submit', [PaymentController::class, 'submitBayar'])->name('user.bayar.submit');
+
+    // Midtrans Payment
+    Route::post('/payment/create-transaction', [PaymentController::class, 'createTransaction']);
+    
+
 
     // Profil Pengguna
     Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
@@ -107,5 +110,6 @@ Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->
 |--------------------------------------------------------------------------
 */
 Route::fallback(function () {
-    return redirect('/login')->with('error');
+    return redirect('/login')->with('error', 'Halaman tidak ditemukan atau Anda belum login.');
 });
+
