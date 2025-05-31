@@ -6,6 +6,7 @@ use App\Models\Pesanan;
 use App\Models\Harga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PesananController extends Controller
 {

@@ -22,8 +22,13 @@
         <input type="hidden" name="email" value="{{ auth()->user()->email }}">
     </form>
 
-    <script>
-        document.getElementById('pay-button').addEventListener('click', function () {
+   <script>
+    document.querySelectorAll('.btn-bayar').forEach(button => {
+        button.addEventListener('click', function () {
+            const pesananId = this.dataset.id;
+            const email = this.dataset.email;
+            const phone = this.dataset.phone;
+
             fetch("{{ url('/payment/create-transaction') }}", {
                 method: 'POST',
                 headers: {
@@ -31,9 +36,9 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 },
                 body: JSON.stringify({
-                    pesanan_id: '{{ $pesanan->id }}',
-                    email: '{{ auth()->user()->email }}',
-                    phone: '{{ auth()->user()->phone ?? '08123456789' }}'
+                    pesanan_id: pesananId,
+                    email: email,
+                    phone: phone
                 }),
             })
             .then(response => response.json())
@@ -41,24 +46,38 @@
                 if (data.snap_token) {
                     snap.pay(data.snap_token, {
                         onSuccess: function(result){
-                            document.getElementById('snap_token').value = data.snap_token;
-                            document.getElementById('payment-form').submit();
+                            alert("Pembayaran berhasil!");
+                            setTimeout(() => {
+                                window.location.href = "{{ route('user.daftarpesanan') }}";
+                            }, 5000); // redirect dalam 5 detik
                         },
                         onPending: function(result){
-                            alert("Pembayaran pending");
+                            alert("Pembayaran tertunda.");
+                            setTimeout(() => {
+                                window.location.href = "{{ route('user.daftarpesanan') }}";
+                            }, 5000);
                         },
                         onError: function(result){
-                            alert("Pembayaran gagal");
+                            alert("Pembayaran gagal.");
+                            setTimeout(() => {
+                                window.location.href = "{{ route('user.daftarpesanan') }}";
+                            }, 5000);
+                        },
+                        onClose: function(){
+                            alert('Pembayaran dibatalkan.');
                         }
                     });
                 } else {
-                    alert('Gagal mendapatkan snap token');
+                    alert('Gagal mendapatkan token pembayaran.');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
+                alert('Terjadi kesalahan. Silakan coba lagi.');
             });
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>

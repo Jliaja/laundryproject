@@ -205,8 +205,6 @@
         Silakan selesaikan pembayaran Anda untuk memproses pesanan.<br />
         Anda dapat melakukan pembayaran melalui metode yang tersedia di halaman pembayaran.
       </div>
-
-      <a href="{{ route('user.bayar', ['id' => $pesanan->id]) }}" class="pay-button" role="button" aria-label="Bayar Sekarang">Bayar</a>
       <a href="{{ route('user.daftarpesanan') }}" class="button" role="button" aria-label="Daftar Pesanan Kamu">Daftar Pesanan Kamu</a>
 
     @else

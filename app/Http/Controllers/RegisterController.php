@@ -23,6 +23,9 @@ class RegisterController extends Controller
             'password' => 'required|min:5',
             'confirm_password' => 'required|same:password',
             'address' => 'required|string|max:255', // Menambahkan validasi alamat
+            'verifikasi_kode' => 'required|in:12345',
+], [
+    'verifikasi_kode.in' => 'Kode verifikasi salah. Silakan masukkan kode yang benar.',
         ]);
 
         // Menyimpan data user ke database

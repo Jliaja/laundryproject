@@ -1,11 +1,12 @@
 <?php
-namespace App\Http\Controllers;
 
+namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pesanan;
 use Midtrans\Notification;
 use Midtrans\Config;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 
 class MidtransController extends Controller
 {
@@ -22,11 +23,17 @@ class MidtransController extends Controller
         Log::info('Midtrans Callback Payload: ' . json_encode($request->all()));
 
         try {
-            $notif = new Notification();
+            $json = $request->getContent();
+            $data = json_decode($json);
 
-            $orderId = $notif->order_id;
-            $transactionStatus = $notif->transaction_status;
-            $fraudStatus = $notif->fraud_status;
+            if (!$data || !isset($data->order_id)) {
+                Log::error("Callback tidak mengandung order_id");
+                return response()->json(['message' => 'Data tidak valid'], 400);
+            }
+
+            $orderId = $data->order_id;
+            $transactionStatus = $data->transaction_status ?? '';
+            $fraudStatus = $data->fraud_status ?? '';
 
             $pesanan = Pesanan::where('order_id', $orderId)->first();
 
@@ -35,29 +42,38 @@ class MidtransController extends Controller
                 return response()->json(['message' => 'Pesanan tidak ditemukan'], 404);
             }
 
-            Log::info("Midtrans Callback - OrderID: $orderId, Status: $transactionStatus, Fraud: $fraudStatus");
+            Log::info("Status Transaksi: $transactionStatus | Fraud: $fraudStatus");
 
             switch ($transactionStatus) {
                 case 'capture':
-                    $pesanan->status_pembayaran = $fraudStatus === 'challenge' ? 'pending' : 'selesai';
-                    $pesanan->status = $fraudStatus === 'challenge' ? 'pending' : 'selesai';
+                    if ($fraudStatus === 'challenge') {
+                        $pesanan->status_pembayaran = 'pending';
+                        $pesanan->status = 'proses';
+                    } else {
+                        $pesanan->status_pembayaran = 'selesai';
+                        $pesanan->status = 'proses';
+                    }
                     break;
+
                 case 'settlement':
                     $pesanan->status_pembayaran = 'selesai';
-                    $pesanan->status = 'selesai';
+                    $pesanan->status = 'proses';
                     break;
+
                 case 'pending':
                     $pesanan->status_pembayaran = 'pending';
-                    $pesanan->status = 'pending';
+                    $pesanan->status = 'menunggu pembayaran';
                     break;
+
                 case 'deny':
-                case 'cancel':
                 case 'expire':
+                case 'cancel':
                     $pesanan->status_pembayaran = 'gagal';
                     $pesanan->status = 'batal';
                     break;
+
                 default:
-                    Log::warning("Status transaksi tidak dikenali: $transactionStatus");
+                    Log::warning("Status tidak dikenali: $transactionStatus");
                     break;
             }
 
@@ -66,7 +82,7 @@ class MidtransController extends Controller
             return response()->json(['message' => 'Callback berhasil diproses']);
         } catch (\Exception $e) {
             Log::error('Callback Error: ' . $e->getMessage());
-            return response()->json(['message' => 'Terjadi kesalahan'], 500);
+            return response()->json(['message' => 'Terjadi kesalahan saat memproses'], 500);
         }
     }
 }
