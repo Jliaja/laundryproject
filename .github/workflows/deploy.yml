@@ -68,10 +68,26 @@ jobs:
         done
 
     - name: Run database migrations and seed
+      env:
+        DB_CONNECTION: mysql
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3307
+        DB_DATABASE: laracicd
+        DB_USERNAME: polindra
+        DB_PASSWORD: polindra
+
       run: php artisan migrate:fresh --seed
 
     - name: Execute tests
+      env:
+        DB_CONNECTION: mysql
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3307
+        DB_DATABASE: laracicd
+        DB_USERNAME: polindra
+        DB_PASSWORD: polindra
       run: php artisan test
+
 
     - name: Upload artifact for deployment
       uses: actions/upload-artifact@v4
