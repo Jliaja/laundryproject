@@ -1,9 +1,23 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Dashboard Admin</title>
   <style>
+    :root {
+      --primary: #2d8cff;
+      --text-dark: #2c3e50;
+      --text-light: #6c757d;
+      --bg-white: #ffffff;
+      --danger: #e74c3c;
+      --success: #28a745;
+      --sidebar-bg: linear-gradient(180deg, #1c92d2 0%, #0066cc 100%);
+      --sidebar-text: #fff;
+      --sidebar-hover: #166ca5;
+      --sidebar-shadow: rgba(0, 0, 0, 0.2);
+      --sidebar-border-radius: 12px;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -11,174 +25,217 @@
     }
 
     body {
-      background-image: url('{{ asset('image/laundry.png') }}');
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: 
+        
+        url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
       background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+      color: var(--text-dark);
       min-height: 100vh;
-      font-family: sans-serif;
-    }
-
-    .navbar {
-      background-color: #ffffffcc; /* sedikit transparan */
-      padding: 20px 40px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      border-bottom: 1px solid #eaeaea;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      height: 100vh;
+      overflow: hidden;
     }
 
-    .navbar div {
-      font-size: 20px;
-      font-weight: 600;
-      color: #34495e;
+    .sidebar {
+      width: 220px;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      padding: 30px 20px;
+      gap: 25px;
+      box-shadow: 3px 0 12px var(--sidebar-shadow);
+      border-top-right-radius: var(--sidebar-border-radius);
+      border-bottom-right-radius: var(--sidebar-border-radius);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 5;
     }
 
     .logout-form {
-      display: inline;
+      position: absolute;
+      bottom: 30px;
+      left: 20px;
+      width: calc(100% - 40px);
     }
 
     .logout-btn {
-      background-color: #e74c3c;
-      color: white;
-      padding: 10px 18px;
+      background-color: var(--danger);
       border: none;
+      color: white;
+      padding: 10px 16px;
       border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: background-color 0.2s ease-in-out;
+      width: 100%;
+      font-size: 16px;
     }
 
     .logout-btn:hover {
       background-color: #c0392b;
     }
 
-    .content {
-      padding: 40px 20px;
-      max-width: 960px;
-      margin: auto;
+    .sidebar:hover {
+      background: linear-gradient(180deg, #1e9ef7 0%, #005dbb 100%);
+      box-shadow: 4px 0 18px rgba(0, 0, 0, 0.35);
+    }
+
+    .sidebar h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 40px;
+      text-align: center;
+      letter-spacing: 1.5px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--sidebar-text);
+      text-decoration: none;
+      font-size: 17px;
+      padding: 12px 15px;
+      border-radius: 10px;
+      transition: background-color 0.3s, transform 0.2s ease;
+      font-weight: 600;
+      position: relative;
+    }
+
+    .sidebar a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: transparent;
+      border-radius: 10px 0 0 10px;
+      transition: background 0.3s ease;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: var(--sidebar-hover);
+      transform: translateX(6px);
+      box-shadow: inset 4px 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    .sidebar a.active::before {
+      background: var(--primary);
+    }
+
+    .sidebar a .icon {
+      font-size: 22px;
+      min-width: 28px;
+      text-align: center;
+      filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+      transition: transform 0.2s ease;
+    }
+
+    .sidebar a:hover .icon {
+      transform: scale(1.2);
+    }
+
+    .main-content {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 40px 50px;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 40px;
+      gap: 20px;
     }
 
     .card {
-      background-color: #ffffffcc; /* transparan agar menyatu dengan background */
-      border-radius: 16px;
+      background-color: var(--bg-white);
+      border-radius: 12px;
       padding: 35px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.05);
       margin-bottom: 30px;
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
+      text-align: center;
+      transition: transform 0.2s;
     }
 
     .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+      transform: translateY(-3px);
     }
 
-    h1, h3 {
-      margin-bottom: 15px;
-      color: #2c3e50;
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: var(--primary);
     }
 
     p {
-      font-size: 16px;
+      font-size: 17px;
+      color: var(--text-light);
       line-height: 1.6;
-      color: #555;
-    }
-
-    ul {
-      padding-left: 20px;
-      list-style: none;
-    }
-
-    li {
-      margin-bottom: 10px;
-      font-size: 16px;
-      position: relative;
-      padding-left: 25px;
-      color: #444;
-    }
-
-    li::before {
-      content: '✔️';
-      position: absolute;
-      left: 0;
-      top: 1px;
     }
 
     .button-container {
       display: flex;
-      flex-wrap: wrap;
+      justify-content: center;
       gap: 20px;
-      margin-top: 30px;
+      flex-wrap: wrap;
     }
 
     .action-btn {
-      background-color: #3498db;
+      background-color: var(--primary);
       color: white;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 16px;
       text-decoration: none;
-      display: inline-block;
-      text-align: center;
-      min-width: 180px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: background 0.2s ease-in-out, transform 0.2s;
     }
 
     .action-btn:hover {
-      background-color: #2980b9;
-      transform: translateY(-2px);
+      background-color: #1a6ed0;
+      transform: scale(1.05);
     }
 
-    @media (max-width: 600px) {
-      .button-container {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .action-btn {
-        width: 100%;
-        text-align: center;
-      }
+    .grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     }
+
   </style>
 </head>
 <body>
 
-  <div class="navbar">
-    <div>Halo, Admin 👋</div>
+  <aside class="sidebar">
+    <h2>Menu</h2>
+    <a href="{{ route('admin.kelola') }}" class="{{ request()->routeIs('admin.kelola') ? 'active' : '' }}">
+      <span class="icon"></span>Kelola Pesanan
+    </a>
+    <a href="{{ route('admin.keuangan') }}" class="{{ request()->routeIs('admin.keuangan') ? 'active' : '' }}">
+      <span class="icon"></span>Kelola Keuangan
+    </a>
+    <a href="{{ route('admin.harga') }}" class="{{ request()->routeIs('admin.harga') ? 'active' : '' }}">
+      <span class="icon"></span>Kelola Harga
+    </a>
     <form class="logout-form" method="POST" action="{{ route('logout') }}">
-      @csrf
-      <button type="submit" class="logout-btn">Logout</button>
+        @csrf
+        <button type="submit" class="logout-btn">Logout</button>
     </form>
+  </aside>
+
+  
+  
+<main class="main-content">
+  <div class="card" style="text-align: left; background: linear-gradient(135deg, #e3f2fd, #ffffff);">
+    <h1>Hai Admin 👋</h1>
+    <p>Selamat datang di sistem manajemen Laundry. Silakan pilih menu di sebelah kiri untuk mulai mengelola pesanan, keuangan, atau harga layanan.</p>
   </div>
-
-  <div class="content">
-    <div class="card">
-      <h1>Selamat Datang di Dashboard Admin</h1>
-      <p>Hai <strong>Admin</strong>! Kamu berhasil login. Di sini kamu bisa mengelola pesanan dan transaksi.</p>
-    </div>
-
-    <div class="card">
-      <h3>🔧 Fitur yang Tersedia</h3>
-      <ul>
-        <li><span class="emoji">📊</span> Mengelola Keuangan</li>
-        <li><span class="emoji">⚙️</span> Mengelola Pesanan</li>
-      </ul>
-    </div>
-
-    <div class="button-container">
-      <a href="{{ route('admin.kelola') }}" class="action-btn">Kelola Pesanan</a>
-      <a href="{{ route('admin.keuangan') }}" class="action-btn">Kelola Keuangan</a>
-      <a href="{{ route('admin.harga') }}" class="action-btn">Kelola Harga pesanan</a>
-    </div>
-  </div>
-
 </body>
 </html>

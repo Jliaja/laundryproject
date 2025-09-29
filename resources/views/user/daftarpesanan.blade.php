@@ -6,19 +6,26 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: 
-        linear-gradient(rgba(220, 233, 249, 0.85), rgba(244, 248, 251, 0.85)),
-        url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
-      background-size: cover;
-      color: var(--text-dark);
-      min-height: 100vh;
-            margin: 20px;
-            background-color: #f9f9f9;
+            background: url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-dark);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
         }
 
         h1 {
             text-align: center;
             color: #333;
+        }
+
+        .container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
 
         .success-message, .error-message {
@@ -56,7 +63,7 @@
         }
 
         tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color: #f9f9f9;
         }
 
         .back-link {
@@ -72,45 +79,67 @@
             text-decoration: underline;
         }
 
-        /* Button styling */
-        .pay-button {
+        .pay-button, .pay-button1 {
             background-color: #28a745;
             color: white;
             padding: 8px 15px;
             border-radius: 5px;
-            text-decoration: none;
             font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
             display: inline-block;
-            transition: all 0.3s ease;
+            min-width: 90px;
+            font-size: 14px;
+            text-align: center;
         }
 
-        .pay-button:hover {
+        .pay-button:hover, .pay-button1:hover {
             background-color: #218838;
-            transform: translateY(-2px);
+        }
+
+        .pay-button[disabled] {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .action-buttons form,
+        .action-buttons a {
+            margin: 0;
         }
     </style>
 </head>
 <body>
 
-<h1>Daftar Pesanan</h1>
+<div class="container">
+    <h1>Daftar Pesanan</h1>
 
-@if(session('success'))
-    <div class="success-message">
-        {{ session('success') }}
-    </div>
-@endif
+    @if(session('success'))
+        <div class="success-message">
+            {{ session('success') }}
+        </div>
+    @endif
 
-@if(session('error'))
-    <div class="error-message">
-        {{ session('error') }}
-    </div>
-@endif
+    @if(session('error'))
+        <div class="error-message">
+            {{ session('error') }}
+        </div>
+    @endif
 
-@if($pesanan->isEmpty())
-    <p style="text-align: center;">Tidak ada pesanan ditemukan.</p>
-@else
-    <table>
-        <thead>
+    @if($pesanan->isEmpty())
+        <p style="text-align: center;">Tidak ada pesanan ditemukan.</p>
+    @else
+        <table>
+            <thead>
             <tr>
                 <th>Pesanan ID</th>
                 <th>Layanan</th>
@@ -118,13 +147,13 @@
                 <th>Total Harga</th>
                 <th>Tanggal</th>
                 <th>Status Pesanan</th>
-                
                 <th>Status Pembayaran</th>
                 <th>Aksi</th>
+                <th>Invoice</th>
             </tr>
-        </thead>
-        <tbody>
-            @foreach($pesanan->sortBy('status') as $p)
+            </thead>
+            <tbody>
+            @foreach($pesanan->sortByDesc('tanggal') as $p)
                 <tr>
                     <td>{{ $p->id }}</td>
                     <td>{{ $p->layanan }}</td>
@@ -138,31 +167,58 @@
                             {{ ucfirst($p->status) }}
                         @endif
                     </td>
+                    <td>{{ ucfirst($p->status_pembayaran) }}</td>
                     <td>
-                        @if($p->status_pembayaran == 'pending')
-                            <span style="color: orange;">Belum Dibayar</span>
-                        @elseif($p->status_pembayaran == 'selesai')
-                            <span style="color: green;">Sudah Dibayar</span>
-                        @elseif($p->status_pembayaran == 'gagal')
-                            <span style="color: red;">Pembayaran Gagal</span>
-                        @else
-                            <span style="color: gray;">Status Tidak Diketahui</span>
-                        @endif
+                        <div class="action-buttons">
+                            @if($p->status === 'pending' && $p->status_pembayaran === 'pending' && $p->total_harga >= 0)
+                                <form action="{{ route('user.batalkanpesanan', $p->id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?');">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="pay-button" style="background-color: red;">
+                                        Batalkan
+                                    </button>
+                                </form>
+                            @elseif($p->status === 'dibatalkan')
+                                <span style="color: red;">Dibatalkan</span>
+                            @elseif($p->status_pembayaran === 'gagal')
+                                <a href="{{ route('user.pembayaran', $p->id) }}" class="pay-button" style="background-color:#007bff;">
+                                    Coba Bayar Lagi
+                                </a>
+                                <form action="{{ route('user.batalkanpesanan', $p->id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?');">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="pay-button" style="background-color: red;">
+                                        Batalkan
+                                    </button>
+                                </form>
+                            @elseif($p->status_pembayaran !== 'selesai' && $p->total_harga > 0)
+                                <a href="{{ route('user.pembayaran', $p->id) }}" class="pay-button" style="background-color:#007bff;">
+                                    Bayar
+                                </a>
+                            @else
+                                <span>-</span>
+                            @endif
+                        </div>
                     </td>
                     <td>
-                        @if($p->status_pembayaran == 'pending')
-                            <a href="{{ route('user.pembayaran', ['id' => $p->id]) }}" class="pay-button">Bayar</a>
+                        @if($p->status == 'selesai' && $p->status_pembayaran == 'selesai')
+                            <a href="{{ route('user.downloadinvoice', $p->id) }}" class="pay-button1" style="background-color:#007bff;">
+                                Download Invoice
+                            </a>
+                        @elseif($p->status == 'selesai' && $p->status_pembayaran != 'selesai')
+                            <span style="font-size: 12px; color: red;">Selesaikan pembayaran</span>
                         @else
-                            -
+                            <span>-</span>
                         @endif
                     </td>
                 </tr>
             @endforeach
-        </tbody>
-    </table>
-@endif
+            </tbody>
+        </table>
+    @endif
 
-<a class="back-link" href="{{ route('user.dashboard') }}">← Kembali ke Dashboard</a>
+    <a class="back-link" href="{{ route('user.dashboard') }}">← Kembali ke Dashboard</a>
+</div>
 
 </body>
-</html>
+</ht

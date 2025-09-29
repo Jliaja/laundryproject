@@ -10,43 +10,42 @@ use App\Models\Pesanan;
 class PaymentController extends Controller
 {
     public function createTransaction(Request $request)
-    {
-        Config::$serverKey = config('midtrans.server_key');
-        Config::$isProduction = config('midtrans.is_production');
-        Config::$isSanitized = true;
-        Config::$is3ds = true;
+{
+    Config::$serverKey = config('midtrans.server_key');
+    Config::$isProduction = config('midtrans.is_production');
+    Config::$isSanitized = true;
+    Config::$is3ds = true;
 
-        $pesanan = Pesanan::find($request->pesanan_id);
-        if (!$pesanan->order_id) {
-    $pesanan->order_id = 'ORDER-' . $pesanan->id . '-' . time();
-    $pesanan->save();
-} else {
-    // Kalau mau force buat baru setiap transaksi, bisa override
-    $pesanan->order_id = 'ORDER-' . $pesanan->id . '-' . time();
-    $pesanan->save();
+    $pesanan = Pesanan::find($request->pesanan_id);
+
+    // Buat order_id baru hanya jika belum ada atau pembayaran sebelumnya gagal
+    if (!$pesanan->order_id || $pesanan->status_pembayaran === 'gagal') {
+        $orderId = 'ORDER-' . $pesanan->id . '-' . uniqid();
+        $pesanan->order_id = $orderId;
+        $pesanan->save();
+    }
+
+    $params = [
+        'transaction_details' => [
+            'order_id' => $pesanan->order_id,
+            'gross_amount' => (int) $pesanan->total_harga,
+        ],
+        'customer_details' => [
+            'first_name' => $pesanan->nama_pelanggan,
+            'email' => $request->email ?? $pesanan->user->email ?? '',
+            'phone' => $request->phone ?? '',
+        ],
+    ];
+
+    try {
+        $snapToken = Snap::getSnapToken($params);
+        return response()->json(['snap_token' => $snapToken]);
+    } catch (\Exception $e) {
+        \Log::error('Midtrans Snap Token Error: ' . $e->getMessage());
+        return response()->json(['error' => 'Gagal mendapatkan snap token'], 500);
+    }
 }
 
-$params = [
-    'transaction_details' => [
-        'order_id' => $pesanan->order_id,
-        'gross_amount' => (int) $pesanan->total_harga,
-    ],
-    'customer_details' => [
-        'first_name' => $pesanan->nama_pelanggan,
-        'email' => $request->email ?? $pesanan->user->email ?? '',
-        'phone' => $request->phone ?? '',
-    ],
-];
-
-
-        try {
-            $snapToken = Snap::getSnapToken($params);
-            return response()->json(['snap_token' => $snapToken]);
-        } catch (\Exception $e) {
-            \Log::error('Midtrans Snap Token Error: ' . $e->getMessage());
-            return response()->json(['error' => 'Gagal mendapatkan snap token'], 500);
-        }
-    }
 
     public function showBayarPage($id)
     {

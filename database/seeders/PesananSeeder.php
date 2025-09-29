@@ -42,16 +42,6 @@ class PesananSeeder extends Seeder
         Pesanan::create([
             'user_id' => 2,
             'nama_pelanggan' => 'user1',
-            'layanan' => 'Lengkap (Cuci + Setrika)',
-            'jumlah' => 5,
-            'total_harga' => 5 * 8000,
-            'tanggal' => '2025-05-04',
-            'status' => 'selesai',
-        ]);
-
-        Pesanan::create([
-            'user_id' => 2,
-            'nama_pelanggan' => 'user1',
             'layanan' => 'Cuci Kering',
             'jumlah' => 20,
             'total_harga' => 20 * 5000,

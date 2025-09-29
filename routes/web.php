@@ -15,7 +15,12 @@ use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Middleware\CekLogin;
+use App\Http\Middleware\VerifyCsrfToken;
+use App\Http\Controllers\InvoiceController;
 
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 /*
 |--------------------------------------------------------------------------
 | Route Public - Tanpa Login
@@ -42,8 +47,8 @@ Route::post('/verifikasi', [ForgetPassController::class, 'verifikasiKode'])->nam
 Route::get('/reset-password', [ForgetPassController::class, 'formResetPassword'])->name('password.reset.form');
 Route::post('/reset-password', [ForgetPassController::class, 'resetPassword'])->name('password.reset');
 // 4. callback
-Route::post('/midtrans/callback', [MidtransController::class, 'callback']);
-
+// Route::post('/payment/callback', [MidtransController::class, 'callback']);
+// Route::post('/midtrans/callback', [MidtransController::class, 'callback'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, 'auth']);
 /*
 |--------------------------------------------------------------------------
 | Route User - Hanya Bisa Diakses Setelah Login
@@ -58,15 +63,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/buatpesanan', [PesananController::class, 'store'])->name('user.storepesanan');
     Route::get('/daftarpesanan', [PesananController::class, 'daftarpesanan'])->name('user.daftarpesanan');
     Route::get('/confirmpesanan/{id}', [PesananController::class, 'confirm'])->name('user.confirmpesanan');
+    Route::put('/pesanan/{id}/batalkan', [PesananController::class, 'batalkan'])->name('user.batalkanpesanan');
+
 
     // Pengambilan Pesanan
     Route::get('/pilihpengambilan/{pesanan_id}', [PesananController::class, 'showPilihPengambilan'])->name('user.pilihpengambilan');
     Route::post('/pilihpengambilan', [PesananController::class, 'submitPilihPengambilan'])->name('user.pilihpengambilan.submit');
-
+    
     // Pembayaran
     Route::get('/pembayaran/{id}', [PaymentController::class, 'showBayarPage'])->name('user.pembayaran');
     Route::post('/pembayaran/submit', [PaymentController::class, 'submitBayar'])->name('user.bayar.submit');
-
+    Route::get('/pesanan/{id}/invoice', [InvoiceController::class, 'download'])->name('user.downloadinvoice');
     // Midtrans Payment
     Route::post('/payment/create-transaction', [PaymentController::class, 'createTransaction']);
     
@@ -76,6 +83,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
     Route::get('/user/profile/edit', [UserController::class, 'editProfile'])->name('user.profile.edit');
     Route::put('/user/profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
+
 });
 
 /*
@@ -89,7 +97,7 @@ Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->
 
     // Manajemen Pesanan
     Route::get('/kelola', [AdminController::class, 'kelolaPesanan'])->name('kelola');
-    Route::put('/pesanan/update/{id}', [PesananController::class, 'update'])->name('pesanan.update');
+    Route::post('/pesanan/update-massal', [AdminController::class, 'updateMassal'])->name('pesanan.updateMassal');
     Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
 
     // Riwayat Keuangan
@@ -109,7 +117,5 @@ Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->
 | Fallback - Redirect jika route tidak ditemukan
 |--------------------------------------------------------------------------
 */
-Route::fallback(function () {
-    return redirect('/login')->with('error', 'Halaman tidak ditemukan atau Anda belum login.');
-});
+
 

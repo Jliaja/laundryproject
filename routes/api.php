@@ -1,8 +1,7 @@
 <?php
 
-use App\Http\Controllers\MidtransController;
-use App\Http\Controllers\PaymentController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MidtransController;
 
-Route::post('/midtrans/callback', [MidtransController::class, 'callback']);
-Route::post('/payment/create-transaction', [PaymentController::class, 'createTransaction']);
+Route::post('/payment/callback', [MidtransController::class, 'callback']);

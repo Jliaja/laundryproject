@@ -7,7 +7,7 @@
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: 
-        linear-gradient(rgba(220, 233, 249, 0.85), rgba(244, 248, 251, 0.85)),
+        
         url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
       background-size: cover;
       color: #2c3e50;
@@ -92,6 +92,15 @@
 
       <label for="tanggal">Tanggal</label>
       <input type="date" id="tanggal" name="tanggal" required>
+      @if ($errors->any())
+  <div style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+    <ul style="margin: 0; padding-left: 20px;">
+      @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+      @endforeach
+    </ul>
+  </div>
+@endif
 
       <button type="submit">Kirim Pesanan</button>
     </form>

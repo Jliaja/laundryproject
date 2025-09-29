@@ -6,7 +6,10 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #f5f7fa, #c3cfe2);
+      background: 
+        
+        url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
+      background-size: cover;
       margin: 0;
       padding: 40px;
     }
@@ -54,7 +57,7 @@
     }
 
     .btn:hover {
-      background-color: #2980b9;
+      background-color: #166ca5;
     }
 
     .back-link {
@@ -155,11 +158,6 @@
         <td>Setrika</td>
         <td id="harga-2">Rp 7.000</td>
         <td><button class="btn" onclick="openModal(2, 'Setrika', 7000)">Edit</button></td>
-      </tr>
-      <tr>
-        <td>Lengkap (Cuci + Setrika)</td>
-        <td id="harga-3">Rp 12.000</td>
-        <td><button class="btn" onclick="openModal(3, 'Lengkap (Cuci + Setrika)', 12000)">Edit</button></td>
       </tr>
     </tbody>
   </table>

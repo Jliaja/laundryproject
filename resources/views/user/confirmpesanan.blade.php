@@ -15,7 +15,7 @@
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: 
-        linear-gradient(rgba(220, 233, 249, 0.85), rgba(244, 248, 251, 0.85)),
+        
         url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
       background-size: cover;
       height: 100vh;
@@ -205,8 +205,6 @@
         Silakan selesaikan pembayaran Anda untuk memproses pesanan.<br />
         Anda dapat melakukan pembayaran melalui metode yang tersedia di halaman pembayaran.
       </div>
-
-      <a href="{{ route('user.bayar', ['id' => $pesanan->id]) }}" class="pay-button" role="button" aria-label="Bayar Sekarang">Bayar</a>
       <a href="{{ route('user.daftarpesanan') }}" class="button" role="button" aria-label="Daftar Pesanan Kamu">Daftar Pesanan Kamu</a>
 
     @else

@@ -5,109 +5,187 @@
   <title>Kelola Keuangan</title>
   <style>
     body {
-      background: #f1f5f9;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
+  background:
+    
+    url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #2c3e50;
+}
 
-    .navbar {
-      background-color: #fff;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+.navbar {
+  background-color: #fff;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-size: 22px;
+  font-weight: 700;
+  color: #2563eb; /* warna biru untuk highlight */
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
 
-    .navbar div {
-      font-size: 18px;
-      font-weight: bold;
-      color: #333;
-    }
+.content {
+  padding: 40px 20px;
+  max-width: 900px;
+  margin: 30px auto;
+}
 
-    .content {
-      padding: 40px 20px;
-      max-width: 900px;
-      margin: auto;
-    }
+h1, h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
 
-    h1, h2 {
-      color: #2c3e50;
-      margin-bottom: 20px;
-    }
+.card {
+  background-color: #ffffffd9;
+  border-radius: 12px;
+  padding: 30px 30px 40px 30px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
+  transition: box-shadow 0.3s ease;
+}
 
-    .card {
-      background-color: #ffffffd9;
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      margin-bottom: 30px;
-    }
+.card:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: Arial, sans-serif;
-      margin-top: 20px;
-    }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  margin-top: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
 
-    th, td {
-      padding: 12px 15px;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
+th, td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
 
-    th {
-      background-color: #4ac6e8;
-      color: white;
-    }
+th {
+  background-color: #4ac6e8;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
 
-    tbody tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+  transition: background-color 0.3s ease;
+}
 
-    .filter-form {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
+tbody tr:hover {
+  background-color: #e0f7ff;
+  cursor: pointer;
+}
 
-    .filter-form select, .filter-form input, .filter-form button {
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
+.filter-form {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 30px;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
 
-    .filter-form button {
-      background-color: #4ac6e8;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
+.filter-form > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+}
 
-    .back-link {
-      display: inline-block;
-      margin-top: 20px;
-      text-decoration: none;
-      color: #4ac6e8;
-      font-weight: bold;
-    }
+.filter-form label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
 
-    @media screen and (max-width: 768px) {
-      .filter-form {
-        flex-direction: column;
-      }
+.filter-form select, .filter-form input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
 
-      .filter-form > div,
-      .filter-form select,
-      .filter-form input,
-      .filter-form button {
-        width: 100%;
-      }
-    }
+.filter-form select:focus, .filter-form input:focus {
+  border-color: #4ac6e8;
+  outline: none;
+}
+
+.filter-form button {
+  background-color: #4ac6e8;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.filter-form button:hover {
+  background-color: #3a9bdc;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 20px;
+  text-decoration: none;
+  color: #4ac6e8;
+  font-weight: bold;
+}
+
+@media screen and (max-width: 768px) {
+  .filter-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter-form > div, .filter-form select, .filter-form input, .filter-form button {
+    width: 100%;
+  }
+}
+
+/* Grid untuk statistik */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+}
+
+.font-bold {
+  font-weight: bold;
+}
+
+.text-blue-600 {
+  color: #2563eb;
+}
+
+.text-green-600 {
+  color: #16a34a;
+}
+
+.text-purple-600 {
+  color: #7c3aed;
+}
+
   </style>
 </head>
 <body>
@@ -119,44 +197,69 @@
   <div class="content">
     <div class="card">
       <h1>Laporan Keuangan</h1>
+<main class="content">
+    <div class="grid mb-4">
+      <div class="card">
+        <h2>Pesanan Bulan Ini</h2>
+        <p class="text-2xl font-bold text-blue-600">{{ $ordersThisMonth }}</p>
+      </div>
+      <div class="card">
+        <h2>Pendapatan Bulan Ini</h2>
+        <p class="text-2xl font-bold text-green-600">Rp {{ number_format($incomeThisMonth, 0, ',', '.') }}</p>
+      </div>
+      <div class="card">
+        <h2>Pendapatan Tahun Ini</h2>
+        <p class="text-2xl font-bold text-purple-600">Rp {{ number_format($incomeThisYear, 0, ',', '.') }}</p>
+      </div>
+    </div>
 
-      <!-- Filter Form -->
+    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px; max-width: 900px; margin: auto;">
+      <div class="card" style="max-height: 300px; padding: 10px;">
+        <canvas id="ordersChart"></canvas>
+      </div>
+      <div class="card" style="max-height: 300px; padding: 10px;">
+        <canvas id="incomeChart"></canvas>
+      </div>
+    </div>
+  </main>
+      @if ($errors->any())
+        <div style="color: red; font-weight: bold; margin-bottom: 20px;">
+          <ul>
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
+
       <form class="filter-form" method="GET" action="{{ route('admin.keuangan') }}">
         <div>
           <label for="filter">Lihat Berdasarkan:</label><br>
           <select name="filter" id="filter">
-            <option value="bulan" {{ request('filter') == 'bulan' ? 'selected' : '' }}>Bulanan</option>
-            <option value="tahun" {{ request('filter') == 'tahun' ? 'selected' : '' }}>Tahunan</option>
+            <option value="bulan" {{ (isset($filter) && $filter == 'bulan') ? 'selected' : '' }}>Bulanan</option>
+            <option value="tahun" {{ (isset($filter) && $filter == 'tahun') ? 'selected' : '' }}>Tahunan</option>
           </select>
         </div>
 
-        <div>
-          <label for="tanggal">Pilih Bulan/Tahun:</label><br>
-          <div id="filter-options">
-            <div id="bulan-dropdown" style="{{ request('filter') == 'bulan' ? '' : 'display:none' }}">
-              <select name="bulan" id="bulan">
-                @foreach (range(1, 12) as $bln)
-                  @php $value = str_pad($bln, 2, '0', STR_PAD_LEFT); @endphp
-                  <option value="{{ $value }}" {{ request('bulan') == $value ? 'selected' : '' }}>
-                    {{ DateTime::createFromFormat('!m', $bln)->format('F') }}
-                  </option>
-                @endforeach
-              </select>
-            </div>
-
-            <div id="tahun-dropdown" style="{{ request('filter') == 'tahun' ? '' : 'display:none' }}">
-              <select name="tahun" id="tahun">
-                @for ($year = 2023; $year <= \Carbon\Carbon::now()->year; $year++)
-                  <option value="{{ $year }}" {{ request('tahun') == $year ? 'selected' : '' }}>{{ $year }}</option>
-                @endfor
-              </select>
-            </div>
-          </div>
+        <div id="bulan-dropdown" style="{{ (isset($filter) && $filter == 'bulan') ? '' : 'display:none' }}">
+          <label for="bulan">Bulan:</label><br>
+          <select name="bulan" id="bulan">
+            @foreach (range(1, 12) as $bln)
+              @php $val = str_pad($bln, 2, '0', STR_PAD_LEFT); @endphp
+              <option value="{{ $val }}" {{ (isset($bulan) && $bulan == $val) ? 'selected' : '' }}>
+                {{ \Carbon\Carbon::create(null, $bln)->format('F') }}
+              </option>
+            @endforeach
+          </select>
         </div>
 
-        <div style="flex: 1;">
-          <label for="search">Cari Nama Pembeli:</label><br>
-          <input type="text" name="search" id="search" placeholder="Masukkan nama" value="{{ request('search') }}">
+        <div id="tahun-dropdown">
+          <label for="tahun">Tahun:</label><br>
+          <select name="tahun" id="tahun">
+            @for ($y = 2023; $y <= now()->year; $y++)
+              <option value="{{ $y }}" {{ (isset($tahun) && $tahun == $y) ? 'selected' : '' }}>{{ $y }}</option>
+            @endfor
+          </select>
         </div>
 
         <div style="align-self: end;">
@@ -164,22 +267,14 @@
         </div>
       </form>
 
-      <!-- Tabel Dinamis (Blade Laravel) -->
       <table>
         <thead>
           <tr>
             <th>No</th>
             <th>Nama Pembeli</th>
+            <th>Tanggal Pesanan</th>
             <th>Total Transaksi</th>
             <th>Status Pembayaran</th>
-            <tbody>
-          <tr><td>1</td><td>A_Fauzi</td><td>Rp 72.000</td><td>Selesai</td></tr>
-          <tr><td>2</td><td>Ahmad_KLL@</td><td>Rp 40.000</td><td>Selesai</td></tr>
-          <tr><td>3</td><td>"_*Aisyah</td><td>Rp 55.000</td><td>Selesai</td></tr>
-          <tr><td>4</td><td>_@Maulana</td><td>Rp 90.000</td><td>Selesai</td></tr>
-          <tr><td>5</td><td>$_Rahma</td><td>Rp 30.000</td><td>Selesai</td></tr>
-          <tr><td>6</td><td>D_@Kartika</td><td>Rp 120.000</td><td>Selesai</td></tr>
-        </tbody>
           </tr>
         </thead>
         <tbody>
@@ -187,32 +282,93 @@
             <tr>
               <td>{{ $loop->iteration }}</td>
               <td>{{ $transaction->nama_pelanggan }}</td>
+              <td>{{ \Carbon\Carbon::parse($transaction->tanggal)->format('d-m-Y') }}</td>
               <td>Rp {{ number_format($transaction->total_harga, 0, ',', '.') }}</td>
-              <td>{{ ucfirst($transaction->status) }}</td>
+              <td>{{ ucfirst($transaction->status_pembayaran) }}</td>
             </tr>
           @empty
             <tr>
-              <td colspan="4">Tidak ada data transaksi.</td>
+              <td colspan="5">Tidak ada data transaksi.</td>
             </tr>
           @endforelse
         </tbody>
+        
       </table>
 
-    
-      <!-- Total Pemasukan -->
+
       <div style="margin-top: 20px;">
         <h3>Total Pemasukan: Rp {{ number_format($totalPemasukan, 0, ',', '.') }}</h3>
       </div>
+      <a class="back-link" href="{{ route('admin.dashboard') }}">← Kembali ke Dashboard</a>
     </div>
-
-    <a class="back-link" href="{{ route('admin.dashboard') }}">← Kembali ke Dashboard</a>
+    
   </div>
 
   <script>
-    document.getElementById('filter').addEventListener('change', function() {
-      let filter = this.value;
+    document.getElementById('filter').addEventListener('change', function () {
+      const filter = this.value;
       document.getElementById('bulan-dropdown').style.display = filter === 'bulan' ? '' : 'none';
-      document.getElementById('tahun-dropdown').style.display = filter === 'tahun' ? '' : 'none';
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const labels = @json($chartLabels);
+    const ordersData = @json($ordersData);
+    const incomeData = @json($incomeData);
+
+    const ctxOrders = document.getElementById('ordersChart').getContext('2d');
+    const gradientOrders = ctxOrders.createLinearGradient(0, 0, 0, 200);
+    gradientOrders.addColorStop(0, 'rgba(0, 123, 255, 0.5)');
+    gradientOrders.addColorStop(1, 'rgba(0, 123, 255, 0)');
+
+    new Chart(ctxOrders, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Jumlah Pesanan',
+          data: ordersData,
+          borderColor: '#007bff',
+          backgroundColor: gradientOrders,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 3,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    const ctxIncome = document.getElementById('incomeChart').getContext('2d');
+    const gradientIncome = ctxIncome.createLinearGradient(0, 0, 0, 200);
+    gradientIncome.addColorStop(0, 'rgba(40, 167, 69, 0.5)');
+    gradientIncome.addColorStop(1, 'rgba(40, 167, 69, 0)');
+
+    new Chart(ctxIncome, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Pendapatan',
+          data: incomeData,
+          borderColor: '#28a745',
+          backgroundColor: gradientIncome,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 3,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
     });
   </script>
 

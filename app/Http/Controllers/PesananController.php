@@ -6,6 +6,7 @@ use App\Models\Pesanan;
 use App\Models\Harga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PesananController extends Controller
 {
@@ -28,9 +29,11 @@ class PesananController extends Controller
         }
 
         $request->validate([
-            'layanan' => 'required|string',
-            'tanggal' => 'required|date',
-        ]);
+    'layanan' => 'required|string',
+    'tanggal' => 'required|date|date_equals:' . date('Y-m-d'),
+], [
+    'tanggal.date_equals' => 'Tanggal hanya bisa hari ini.',
+]);
 
         $user = Auth::user();
 
@@ -111,31 +114,22 @@ class PesananController extends Controller
 
     return back()->with('success', 'Metode pengambilan berhasil disimpan.');
 }
-    public function update(Request $request, $id)
+public function batalkan($id)
 {
     $pesanan = Pesanan::findOrFail($id);
 
-    // Update status jika ada input
-    if ($request->has('status')) {
-        $pesanan->status = $request->input('status');
+    // Hanya izinkan pembatalan jika pesanan dan pembayaran masih dalam status "pending"
+    if ($pesanan->status === 'pending' && $pesanan->status_pembayaran === 'pending') {
+        $pesanan->status = 'dibatalkan';
+        $pesanan->save();
+
+        return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan.');
     }
 
-    // Update jumlah jika ada input
-    if ($request->has('jumlah')) {
-        $pesanan->jumlah = $request->input('jumlah');
-
-        // Cek harga per Kg sesuai layanan
-        $hargaRecord = Harga::where('layanan', $pesanan->layanan)->first();
-        if ($hargaRecord) {
-            $pesanan->total_harga = $pesanan->jumlah * $hargaRecord->hargaPerKg;
-        } else {
-            $pesanan->total_harga = 0; // Default jika harga tidak ditemukan
-        }
-    }
-
-    $pesanan->save();
-
-    return redirect()->back()->with('success', 'Pesanan berhasil diperbarui');
+    // Jika status sudah dihitung atau pembayaran sudah dilakukan, tolak pembatalan
+    return redirect()->back()->with('error', 'Pesanan tidak bisa dibatalkan karena sudah diproses atau dibayar.');
 }
+
+
 
 }

@@ -7,7 +7,8 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background: url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
+            background-size: cover;
             margin: 0;
             padding: 0;
         }
@@ -36,10 +37,6 @@
             border: 1px solid #c3e6cb;
         }
 
-        .form-container {
-            display: block;
-        }
-
         .form-hidden {
             display: none;
         }
@@ -50,8 +47,8 @@
 
         label {
             font-weight: bold;
-            margin-bottom: 5px;
             display: block;
+            margin-bottom: 5px;
         }
 
         input[type="radio"] {
@@ -82,18 +79,6 @@
             background-color: #218838;
         }
 
-        .radio-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .radio-group label {
-            font-weight: normal;
-            margin-left: 5px;
-        }
-
-        /* Tombol "Kembali ke Daftar Pesanan" */
         .btn-back {
             background-color: #007bff;
             color: white;
@@ -110,7 +95,11 @@
             background-color: #0056b3;
         }
 
-        /* Responsive Design */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 15px;
@@ -129,37 +118,31 @@
 
     <div class="container">
         @if(session('success'))
-            <!-- Menampilkan pesan sukses -->
             <div class="alert">
                 {{ session('success') }}
             </div>
 
-            <!-- Tombol "Kembali ke Daftar Pesanan" setelah submit -->
             <form action="{{ route('user.daftarpesanan') }}" method="GET">
                 <button type="submit" class="btn-back">Kembali ke Daftar Pesanan</button>
             </form>
         @else
-            <div class="form-container" id="form-container">
-                <div style="background: #f8f9fa; padding: 15px; border: 1px solid #ccc; margin-bottom: 20px;">
-                <form action="{{ route('user.pilihpengambilan.submit') }}" method="POST">
+            <div id="form-container">
+                <form action="{{ route('user.pilihpengambilan.submit') }}" method="POST" style="background: #f8f9fa; padding: 15px; border: 1px solid #ccc;">
                     @csrf
-
-                    <!-- Pastikan pesanan_id diteruskan dengan benar -->
                     <input type="hidden" name="pesanan_id" value="{{ $pesanan->id }}">
 
                     <div class="form-group">
                         <label for="metode">Pilih Metode Pengambilan:</label>
                         <div class="radio-group">
-                            <label><input type="radio" name="metode" value="antar" required> Antar ke Rumah (Ongkir 5rb) </label>
+                            <label><input type="radio" name="metode" value="antar" required> Antar ke Rumah (Ongkir 5rb)</label>
                             <label><input type="radio" name="metode" value="ambil" required> Ambil Sendiri</label>
                         </div>
                     </div>
 
-                    <!-- Jika memilih antar jemput, tampilkan input alamat -->
-                    <div id="address" style="display:none;" class="form-group">
-    <label for="alamat">Alamat Pengambilan:</label>
-    <input type="text" name="alamat" value="{{ old('alamat', $address ?? '') }}" placeholder="Masukkan alamat">
-</div>
+                    <div id="address" class="form-group" style="display: none;">
+                        <label for="alamat">Alamat Pengantaran:</label>
+                        <input type="text" name="alamat" value="{{ old('alamat', $address ?? '') }}" placeholder="Masukkan alamat">
+                    </div>
 
                     <button type="submit">Kirim</button>
                 </form>
@@ -168,18 +151,14 @@
     </div>
 
     <script>
-        // Menampilkan input alamat jika memilih antar jemput
+        // Menampilkan input alamat jika memilih "antar"
         document.querySelectorAll('input[name="metode"]').forEach((elem) => {
             elem.addEventListener('change', function() {
-                if (this.value === 'antar') {
-                    document.getElementById('alamat').style.display = 'block';
-                } else {
-                    document.getElementById('alamat').style.display = 'none';
-                }
+                const addressField = document.getElementById('address');
+                addressField.style.display = this.value === 'antar' ? 'block' : 'none';
             });
         });
 
-        // Setelah form disubmit dan pesan sukses ada, sembunyikan form
         @if(session('success'))
             document.getElementById('form-container').classList.add('form-hidden');
         @endif
