@@ -4,32 +4,33 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'username', 'email', 'password', 'role', 'address',
     ];
 
-    /**
-     * Get the name of the unique identifier for the user.
-     *
-     * @return string
-     */
-    public function getAuthIdentifierName()
-    {
-        return 'username'; // Ganti dari 'email' ke 'username'
-    }
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
 
-    protected $primaryKey = 'id';  // Pastikan 'id' adalah primary key
-    protected $keyType = 'int';    // Pastikan key type adalah integer
-    public $incrementing = true;   // Pastikan incrementing diatur ke true
+    protected $primaryKey = 'id';
+    protected $keyType = 'int';
+    public $incrementing = true;
 
-    // Relasi dengan Pesanan
     public function pesanan()
     {
         return $this->hasMany(Pesanan::class);
+    }
+
+    // Login pakai username
+    public function getAuthIdentifierName()
+    {
+        return 'username';
     }
 }
