@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Request;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\DashboardController;
@@ -12,85 +11,59 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HargaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\KeuanganController;
-use App\Http\Controllers\MidtransController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Middleware\CekLogin;
-use App\Http\Middleware\VerifyCsrfToken;
+use App\Http\Controllers\Api\PaymentController;      // versi web
+use App\Http\Controllers\MidtransController;     // callback web
 use App\Http\Controllers\InvoiceController;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
-/*
-|--------------------------------------------------------------------------
-| Route Public - Tanpa Login
-|--------------------------------------------------------------------------
-*/
 
-// Halaman Login & Logout
+// LOGIN & REGISTER
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Registrasi Pengguna Baru
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 
-// Lupa Password
-// 1. Input Email
+// LUPA PASSWORD
 Route::get('/lupa-password', [ForgetPassController::class, 'formEmail'])->name('kirimemail');
 Route::post('/kirim-kode', [ForgetPassController::class, 'kirimKode'])->name('verifikasi.kirim.kode');
-// 2. Verifikasi Kode OTP
 Route::get('/verifikasi', [ForgetPassController::class, 'formKode'])->name('verifikasi');
 Route::post('/verifikasi', [ForgetPassController::class, 'verifikasiKode'])->name('verifikasi.kode');
-// 3. Reset Password
 Route::get('/reset-password', [ForgetPassController::class, 'formResetPassword'])->name('password.reset.form');
 Route::post('/reset-password', [ForgetPassController::class, 'resetPassword'])->name('password.reset');
-// 4. callback
-// Route::post('/payment/callback', [MidtransController::class, 'callback']);
-// Route::post('/midtrans/callback', [MidtransController::class, 'callback'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, 'auth']);
-/*
-|--------------------------------------------------------------------------
-| Route User - Hanya Bisa Diakses Setelah Login
-|--------------------------------------------------------------------------
-*/
+
+// CALLBACK MIDTRANS UNTUK WEB
+Route::post('/midtrans/callback', [MidtransController::class, 'callback'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+// USER LOGIN
 Route::middleware(['auth'])->group(function () {
-    // Dashboard User
+
+    // DASHBOARD USER
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('user.dashboard');
 
-    // Pesanan
+    // PESANAN
     Route::get('/buatpesanan', [PesananController::class, 'create'])->name('user.buatpesanan');
-    Route::post('/buatpesanan', [PesananController::class, 'store'])->name('user.storepesanan');
+    Route::post('/buatpesanan', [PesananController::class, 'store']);
     Route::get('/daftarpesanan', [PesananController::class, 'daftarpesanan'])->name('user.daftarpesanan');
-    Route::get('/confirmpesanan/{id}', [PesananController::class, 'confirm'])->name('user.confirmpesanan');
-    Route::put('/pesanan/{id}/batalkan', [PesananController::class, 'batalkan'])->name('user.batalkanpesanan');
 
+    // PEMBAYARAN (WEB)
+    Route::get('/pembayaran/{id}', [PaymentController::class, 'createTransaction'])->name('user.pembayaran');
+    Route::post('/pembayaran/submit', [PaymentController::class, 'submitBayar']);
 
-    // Pengambilan Pesanan
-    Route::get('/pilihpengambilan/{pesanan_id}', [PesananController::class, 'showPilihPengambilan'])->name('user.pilihpengambilan');
-    Route::post('/pilihpengambilan', [PesananController::class, 'submitPilihPengambilan'])->name('user.pilihpengambilan.submit');
-    
-    // Pembayaran
-    Route::get('/pembayaran/{id}', [PaymentController::class, 'showBayarPage'])->name('user.pembayaran');
-    Route::post('/pembayaran/submit', [PaymentController::class, 'submitBayar'])->name('user.bayar.submit');
+    // INVOICE DOWNLOAD
     Route::get('/pesanan/{id}/invoice', [InvoiceController::class, 'download'])->name('user.downloadinvoice');
-    // Midtrans Payment
-    Route::post('/payment/create-transaction', [PaymentController::class, 'createTransaction']);
-    
 
-
-    // Profil Pengguna
+    // PROFIL USER
     Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
-    Route::get('/user/profile/edit', [UserController::class, 'editProfile'])->name('user.profile.edit');
-    Route::put('/user/profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
-
+    Route::get('/user/profile/edit', [UserController::class, 'editProfile']);
+    Route::put('/user/profile', [UserController::class, 'updateProfile']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| Route Admin - Role: admin (Proteksi dengan Middleware ceklogin:admin)
-|--------------------------------------------------------------------------
-*/
+// ADMIN PANEL
 Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard Admin
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
@@ -111,11 +84,3 @@ Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->
     Route::put('/harga/{id}', [HargaController::class, 'update'])->name('harga.update');
     Route::delete('/harga/{id}', [HargaController::class, 'destroy'])->name('harga.destroy');
 });
-
-/*
-|--------------------------------------------------------------------------
-| Fallback - Redirect jika route tidak ditemukan
-|--------------------------------------------------------------------------
-*/
-
-

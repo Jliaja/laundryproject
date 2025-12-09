@@ -2,29 +2,52 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LoginController;
-use App\Http\Controllers\Api\RegisterController;
 use App\Http\Controllers\Api\PesananController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\HargaController;
+use App\Http\Controllers\Api\AccountController;
 
 Route::post('/login', [LoginController::class, 'login']);
-Route::post('/register', [RegisterController::class, 'register']);
-Route::get('/harga', [HargaController::class, 'index']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user/profile', [UserController::class, 'profile']);
-    Route::put('/user/profile', [UserController::class, 'updateProfile']);
-    Route::get('/profile', [UserController::class, 'profile']);
 
+    // PAYMENT (API)
+    Route::post('/payment/create-transaction', [PaymentController::class, 'createTransaction']);
+
+    // DATA USER
+    Route::get('/user/profile', [UserController::class, 'profile']);
+    Route::match(['PUT', 'POST'], '/user/profile', [UserController::class, 'updateProfile']);
+
+    // HARGA
+    Route::get('/harga', [HargaController::class, 'index']);
+
+    // PESANAN
     Route::get('/pesanan', [PesananController::class, 'index']);
     Route::post('/pesanan', [PesananController::class, 'store']);
     Route::get('/pesanan/{id}', [PesananController::class, 'show']);
     Route::put('/pesanan/{id}/cancel', [PesananController::class, 'cancel']);
 
-    Route::post('/payment', [PaymentController::class, 'createTransaction']);
+    
 });
 
+// CALLBACK MIDTRANS (tidak pakai sanctum)
+Route::post('/payment/callback', [MidtransController::class, 'handle']);
+Route::any('/midtrans', function () {
+    return response()->json(['status' => 'OK']);
+});
 
-// Callback dari Midtrans
-Route::post('/payment/callback', [PaymentController::class, 'callback']);
+// ------------------------ REGISTER ------------------------
+Route::post('/account/register', [AccountController::class, 'register']);
+
+// ------------------------ OTP ------------------------
+Route::post('/account/verify-otp', [AccountController::class, 'verifyOtp']);
+Route::post('/account/verify-otp-forgot', [AccountController::class, 'verifyOtpForgot']);
+Route::post('/account/resend-otp', [AccountController::class, 'resendOtp']);
+// ------------------------ RESET PASSWORD ------------------------
+Route::post('/account/reset-password', [AccountController::class, 'resetPassword']);
+Route::post('/account/send-otp-forgot', [AccountController::class, 'sendOtpForgot']);
+
+

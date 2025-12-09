@@ -9,43 +9,34 @@ use Illuminate\Http\Request;
 
 class PesananController extends Controller
 {
-    // Ambil semua pesanan user login
+    // Ambil pesanan user login
     public function index(Request $request)
     {
-        $user = $request->user();
-        $pesanan = Pesanan::where('user_id', $user->id)->get();
-
-        return response()->json($pesanan);
+        return Pesanan::where('user_id', $request->user()->id)->get();
     }
 
-    // Simpan pesanan baru (mobile)
+    // Simpan pesanan mobile TANPA jumlah & status
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|integer',
             'nama_pelanggan' => 'required|string',
             'layanan' => 'required|string',
-            'jumlah' => 'required|integer|min:0',
             'tanggal' => 'required|date',
-            'status' => 'required|string',
-            'alamat' => 'required|string',
+            'address' => 'required|string',
         ]);
 
-        // Ambil harga per layanan (kalau ada di tabel Harga)
-        $hargaRecord = Harga::where('layanan', $validated['layanan'])->first();
-        $hargaPerKg = $hargaRecord ? $hargaRecord->hargaPerKg : 0;
+        // Harga default 0
+        $totalHarga = 0;
 
-        // Hitung total harga (kalau jumlah > 0)
-        $totalHarga = $validated['jumlah'] > 0 ? $validated['jumlah'] * $hargaPerKg : 0;
-
+        // Buat pesanan
         $pesanan = Pesanan::create([
-            'user_id' => $validated['user_id'],
+            'user_id' => $request->user()->id,
             'nama_pelanggan' => $validated['nama_pelanggan'],
             'layanan' => $validated['layanan'],
-            'jumlah' => $validated['jumlah'],
+            'jumlah' => 0, // user tidak isi
             'tanggal' => $validated['tanggal'],
-            'status' => $validated['status'],
-            'alamat' => $validated['alamat'],
+            'status' => 'pending', // default
+            'address' => $validated['address'],
             'total_harga' => $totalHarga,
         ]);
 
@@ -55,17 +46,13 @@ class PesananController extends Controller
         ], 201);
     }
 
-    // Detail pesanan user tertentu
     public function show(Request $request, $id)
     {
-        $pesanan = Pesanan::where('id', $id)
+        return Pesanan::where('id', $id)
             ->where('user_id', $request->user()->id)
             ->firstOrFail();
-
-        return response()->json($pesanan);
     }
 
-    // Batalkan pesanan
     public function cancel(Request $request, $id)
     {
         $pesanan = Pesanan::where('id', $id)
@@ -74,10 +61,10 @@ class PesananController extends Controller
 
         $pesanan->update(['status' => 'dibatalkan']);
 
-        return response()->json([
+        return [
             'success' => true,
             'message' => 'Pesanan dibatalkan',
             'pesanan' => $pesanan
-        ]);
+        ];
     }
 }

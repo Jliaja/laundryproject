@@ -110,7 +110,7 @@
                   <select name="pesanans[{{ $pesanan->id }}][status]">
                     <option value="Pending" {{ $pesanan->status == 'Pending' ? 'selected' : '' }}>Pending</option>
                     <option value="hitung berat dan harga" {{ $pesanan->status == 'hitung berat dan harga' ? 'selected' : '' }}>Hitung berat dan harga</option>
-                    <option value="diproses" {{ $pesanan->status == 'proses' ? 'selected' : '' }}>Di Proses</option>
+                    <option value="proses" {{ $pesanan->status == 'proses' ? 'selected' : '' }}>Proses</option>
                     <option value="selesai" {{ $pesanan->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
                   </select>
                 </td>

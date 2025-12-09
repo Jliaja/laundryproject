@@ -95,7 +95,7 @@
         const email = "{{ auth()->user()->email }}";
         const phone = "{{ auth()->user()->phone ?? '08123456789' }}";
 
-        fetch("{{ url('/payment/create-transaction') }}", {
+        fetch("{{ url('api/payment/createTransaction') }}", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
