@@ -29,6 +29,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/pesanan', [PesananController::class, 'store']);
     Route::get('/pesanan/{id}', [PesananController::class, 'show']);
     Route::put('/pesanan/{id}/cancel', [PesananController::class, 'cancel']);
+    Route::post('/apply-voucher', [PesananController::class, 'applyVoucher']);
+
 
     
 });

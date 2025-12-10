@@ -224,6 +224,12 @@
     <a href="{{ route('admin.harga') }}" class="{{ request()->routeIs('admin.harga') ? 'active' : '' }}">
       <span class="icon"></span>Kelola Harga
     </a>
+    <a href="{{ route('admin.voucher') }}" class="{{ request()->routeIs('admin.voucher') ? 'active' : '' }}">
+      <span class="icon"></span>Kelola Voucher
+    </a>
+    <a href="{{ route('admin.backup') }}" class="btn btn-primary">
+    Download Backup Database
+</a>
     <form class="logout-form" method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit" class="logout-btn">Logout</button>

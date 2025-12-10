@@ -283,7 +283,7 @@ tbody tr:hover {
               <td>{{ $loop->iteration }}</td>
               <td>{{ $transaction->nama_pelanggan }}</td>
               <td>{{ \Carbon\Carbon::parse($transaction->tanggal)->format('d-m-Y') }}</td>
-              <td>Rp {{ number_format($transaction->total_harga, 0, ',', '.') }}</td>
+              <td>Rp {{ number_format($transaction->total_akhir, 0, ',', '.') }}</td>
               <td>{{ ucfirst($transaction->status_pembayaran) }}</td>
             </tr>
           @empty

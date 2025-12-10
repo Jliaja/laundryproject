@@ -23,7 +23,10 @@ class Pesanan extends Model
     'metode_pengambilan',
     'address',
     'invoice_url',
-    'order_id'
+    'order_id',
+    'voucher_id',
+    'diskon',
+    'total_akhir'
 ];
 
 

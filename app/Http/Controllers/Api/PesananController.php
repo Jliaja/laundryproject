@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Pesanan;
 use App\Models\Harga;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 
 class PesananController extends Controller
@@ -17,41 +18,70 @@ class PesananController extends Controller
 
     // Simpan pesanan mobile TANPA jumlah & status
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nama_pelanggan' => 'required|string',
-            'layanan' => 'required|string',
-            'tanggal' => 'required|date',
-            'address' => 'required|string',
-        ]);
+    
+{ 
+    $validated = $request->validate([
+        'nama_pelanggan' => 'required|string',
+        'layanan' => 'required|string',
+        'tanggal' => 'required|date',
+        'address' => 'required|string',
+        'voucher_id' => 'nullable|exists:vouchers,id',
+    ]);
 
-        // Harga default 0
-        $totalHarga = 0;
+    // Harga default per layanan
+    $hargaRecord = Harga::where('layanan', $validated['layanan'])->first();
+    $totalHarga = 0; // user belum input jumlah cucian
 
-        // Buat pesanan
-        $pesanan = Pesanan::create([
-            'user_id' => $request->user()->id,
-            'nama_pelanggan' => $validated['nama_pelanggan'],
-            'layanan' => $validated['layanan'],
-            'jumlah' => 0, // user tidak isi
-            'tanggal' => $validated['tanggal'],
-            'status' => 'pending', // default
-            'address' => $validated['address'],
-            'total_harga' => $totalHarga,
-        ]);
+    $diskon = 0;
 
-        return response()->json([
-            'message' => 'Pesanan berhasil dibuat',
-            'data' => $pesanan,
-        ], 201);
+    // Hitung diskon kalau voucher dipilih
+    if (!empty($validated['voucher_id'])) {
+    $voucher = Voucher::find($validated['voucher_id']);
+
+    if ($voucher) {
+
+        // Cek apakah stok tersedia
+        if ($voucher->stok <= 0) {
+            return response()->json([
+                'message' => 'Voucher sudah habis'
+            ], 400);
+        }
+
+        // Hitung diskon
+        if ($voucher->tipe == 'persen') {
+            $diskon = $totalHarga * ($voucher->nilai / 100);
+        } else {
+            $diskon = $voucher->nilai;
+        }
+
+        // Kurangi stok
+        $voucher->decrement('stok', 1);
+
+        // Tambah terpakai
+        $voucher->increment('terpakai', 1);
     }
+}
 
-    public function show(Request $request, $id)
-    {
-        return Pesanan::where('id', $id)
-            ->where('user_id', $request->user()->id)
-            ->firstOrFail();
-    }
+    // Simpan pesanan
+    $pesanan = Pesanan::create([
+        'user_id' => $request->user()->id,
+        'nama_pelanggan' => $validated['nama_pelanggan'],
+        'layanan' => $validated['layanan'],
+        'jumlah' => 0,
+        'tanggal' => $validated['tanggal'],
+        'status' => 'pending',
+        'address' => $validated['address'],
+        'total_harga' => $totalHarga,
+        'voucher_id' => $validated['voucher_id'] ?? null,
+        'diskon' => $diskon,
+        'total_akhir' => max($totalHarga - $diskon, 0), // jangan negatif
+    ]);
+
+    return response()->json([
+        'message' => 'Pesanan berhasil dibuat',
+        'data' => $pesanan,
+    ], 201);
+}
 
     public function cancel(Request $request, $id)
     {
@@ -67,4 +97,25 @@ class PesananController extends Controller
             'pesanan' => $pesanan
         ];
     }
+    public function applyVoucher(Request $request)
+{
+    $kode = $request->kode;
+
+    $voucher = Voucher::where('kode', $kode)
+        ->where('stok', '>', 0)
+        ->whereDate('masa_berlaku', '>=', now())
+        ->first();
+
+    if (!$voucher) {
+        return response()->json(['message' => 'Voucher tidak valid'], 400);
+    }
+
+    return response()->json([
+        'voucher_id' => $voucher->id,
+        'kode'       => $voucher->kode,
+        'tipe'       => $voucher->tipe,
+        'nilai'      => $voucher->nilai
+    ]);
+}
+
 }

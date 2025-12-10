@@ -40,7 +40,7 @@ class PaymentController extends Controller
         $params = [
             'transaction_details' => [
                 'order_id' => $orderId,
-                'gross_amount' => (int) $pesanan->total_harga,
+                'gross_amount' => (int) $pesanan->total_akhir,
             ],
             'customer_details' => [
                 'first_name' => $pesanan->nama_pelanggan ?? 'User Laundry',

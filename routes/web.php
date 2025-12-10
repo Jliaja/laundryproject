@@ -83,4 +83,15 @@ Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->
     Route::get('/harga/{id}/edit', [HargaController::class, 'edit'])->name('harga.edit');
     Route::put('/harga/{id}', [HargaController::class, 'update'])->name('harga.update');
     Route::delete('/harga/{id}', [HargaController::class, 'destroy'])->name('harga.destroy');
+
+    // Voucher
+    Route::get('/voucher', [AdminController::class, 'kelolaVoucher'])->name('voucher');
+    Route::post('/voucher', [AdminController::class, 'storeVoucher']);
+    Route::delete('/voucher/{id}', [AdminController::class, 'hapusVoucher']);
+    
+    // Backup Database
+    Route::get('/backup', [AdminController::class, 'backupDatabase'])->name('backup');
+
+
+
 });

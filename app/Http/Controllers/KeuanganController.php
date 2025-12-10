@@ -41,15 +41,15 @@ class KeuanganController extends Controller
                                   ->whereYear('created_at', $now->year)
                                   ->where('status', 'selesai')
                                   ->where('status_pembayaran', 'selesai')
-                                  ->sum('total_harga');
+                                  ->sum('total_akhir');
 
         $incomeThisYear = Pesanan::whereYear('created_at', $now->year)
                                  ->where('status', 'selesai')
                                  ->where('status_pembayaran', 'selesai')
-                                 ->sum('total_harga');
+                                 ->sum('total_akhir');
 
         // Total pemasukan filter
-        $totalPemasukan = $transactions->sum('total_harga');
+        $totalPemasukan = $transactions->sum('total_akhir');
 
         // Data chart harian untuk bulan berjalan
         $chartLabels = [];
@@ -71,7 +71,7 @@ class KeuanganController extends Controller
                 $incomeData[] = Pesanan::whereDate('created_at', $date)
                                        ->where('status', 'selesai')
                                        ->where('status_pembayaran', 'selesai')
-                                       ->sum('total_harga');
+                                       ->sum('total_akhir');
             }
         } else {
             // Filter tahun - buat chart bulanan
@@ -88,7 +88,7 @@ class KeuanganController extends Controller
                                        ->whereMonth('created_at', $month)
                                        ->where('status', 'selesai')
                                        ->where('status_pembayaran', 'selesai')
-                                       ->sum('total_harga');
+                                       ->sum('total_akhir');
             }
         }
 
