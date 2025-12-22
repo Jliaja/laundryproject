@@ -14,6 +14,7 @@ use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\Api\PaymentController;      // versi web
 use App\Http\Controllers\MidtransController;     // callback web
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\StokController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -76,13 +77,14 @@ Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->
     // Riwayat Keuangan
     Route::get('/keuangan', [KeuanganController::class, 'riwayatKeuangan'])->name('keuangan');
 
+
     // Harga Layanan
     Route::get('/harga', [HargaController::class, 'harga'])->name('harga');
-    Route::get('/harga/create', [HargaController::class, 'create'])->name('harga.create');
     Route::post('/harga', [HargaController::class, 'store'])->name('harga.store');
-    Route::get('/harga/{id}/edit', [HargaController::class, 'edit'])->name('harga.edit');
+    Route::get('/harga/{id}/edit', [HargaController::class, 'edit'])->name('admin.harga.edit');
     Route::put('/harga/{id}', [HargaController::class, 'update'])->name('harga.update');
     Route::delete('/harga/{id}', [HargaController::class, 'destroy'])->name('harga.destroy');
+
 
     // Voucher
     Route::get('/voucher', [AdminController::class, 'kelolaVoucher'])->name('voucher');
@@ -91,6 +93,13 @@ Route::middleware(['auth', 'ceklogin:admin'])->prefix('admin')->name('admin.')->
     
     // Backup Database
     Route::get('/backup', [AdminController::class, 'backupDatabase'])->name('backup');
+
+    // Stok
+    Route::get('/stok', [StokController::class, 'index'])->name('stok');
+    Route::post('/stok', [StokController::class, 'store'])->name('stok.store');
+    Route::put('/stok/{id}', [StokController::class, 'update'])->name('stok.update');
+    Route::delete('/stok/{id}', [StokController::class, 'destroy'])->name('stok.destroy');
+
 
 
 

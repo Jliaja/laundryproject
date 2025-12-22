@@ -227,9 +227,13 @@
     <a href="{{ route('admin.voucher') }}" class="{{ request()->routeIs('admin.voucher') ? 'active' : '' }}">
       <span class="icon"></span>Kelola Voucher
     </a>
-    <a href="{{ route('admin.backup') }}" class="btn btn-primary">
+    <a href="{{ route('admin.backup') }}" class="{{ request()->routeIs('admin.backup') ? 'active' : '' }}">
     Download Backup Database
 </a>
+<a href="{{ route('admin.stok') }}" class="{{ request()->routeIs('admin.stok') ? 'active' : '' }}">
+  <span class="icon">🧴</span>Stok Laundry
+</a>
+
     <form class="logout-form" method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit" class="logout-btn">Logout</button>

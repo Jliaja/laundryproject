@@ -6,11 +6,14 @@ use App\Http\Controllers\Api\PesananController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Api\HargaController;
 use App\Http\Controllers\Api\AccountController;
 
 Route::post('/login', [LoginController::class, 'login']);
 
+Route::middleware(['auth:sanctum', 'throttle:3,1'])
+    ->post('/pesanan', [PesananController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -30,9 +33,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/pesanan/{id}', [PesananController::class, 'show']);
     Route::put('/pesanan/{id}/cancel', [PesananController::class, 'cancel']);
     Route::post('/apply-voucher', [PesananController::class, 'applyVoucher']);
+    Route::get('/pesanan/{id}/invoice', [InvoiceController::class, 'download']);
+});
 
-
-    
+// Layanan
+Route::get('/layanan', function () {
+    return response()->json(
+        \App\Models\Harga::select('id', 'layanan', 'hargaPerKg')->get()
+    );
 });
 
 // CALLBACK MIDTRANS (tidak pakai sanctum)

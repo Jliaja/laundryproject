@@ -7,6 +7,9 @@ use App\Models\Harga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\StokBarang;
+use App\Models\StokLog;
+use App\Models\StokLayanan;
 
 class PesananController extends Controller
 {
@@ -130,6 +133,39 @@ public function batalkan($id)
     return redirect()->back()->with('error', 'Pesanan tidak bisa dibatalkan karena sudah diproses atau dibayar.');
 }
 
+public function selesai($id)
+{
+    $pesanan = Pesanan::findOrFail($id);
+
+    if ($pesanan->status !== 'pending') {
+        return back()->with('error','Pesanan sudah diproses');
+    }
+
+    $pesanan->status = 'selesai';
+    $pesanan->save();
+
+    // ambil aturan stok sesuai layanan
+    $aturan = StokLayanan::where('layanan', $pesanan->layanan)->get();
+
+    foreach ($aturan as $a) {
+        $stok = StokBarang::find($a->stok_barang_id);
+
+        if ($stok) {
+            // potong stok
+            $stok->decrement('stok', $a->jumlah);
+
+            // log stok
+            StokLog::create([
+                'stok_barang_id' => $stok->id,
+                'tipe' => 'keluar',
+                'jumlah' => $a->jumlah,
+                'keterangan' => 'Pesanan #' . $pesanan->order_id
+            ]);
+        }
+    }
+
+    return back()->with('success','Pesanan selesai & stok otomatis terpotong');
+}
 
 
 }

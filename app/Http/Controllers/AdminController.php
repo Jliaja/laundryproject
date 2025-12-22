@@ -92,12 +92,12 @@ class AdminController extends Controller
 
 
     // Kelola Harga
-    public function kelolaHargaPesanan()
+    // public function kelolaHargaPesanan()
     
-    {
-        $hargas = Harga::all();
-        return view('admin.harga', compact('hargas'));
-    }
+    // {
+    //     $hargas = Harga::all();
+    //     return view('admin.harga', compact('hargas'));
+    // }
 
      public function kelolaVoucher()
     {

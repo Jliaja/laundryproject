@@ -3,130 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <title>Kelola Harga Pesanan</title>
+
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: 
-        
-        url('/storage/images/backgroudlandry.jpeg') no-repeat center center fixed;
-      background-size: cover;
-      margin: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)),
+                  url('/storage/images/backgroudlandry.jpeg') center / cover fixed;
       padding: 40px;
     }
 
     .container {
-      background-color: #fff;
+      background: #ffffff;
       padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-      max-width: 700px;
+      border-radius: 14px;
+      max-width: 850px;
       margin: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,.12);
     }
 
     h2 {
       text-align: center;
-      color: #2c3e50;
       margin-bottom: 25px;
+      color: #2c3e50;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    thead {
+      background: #3498db;
+      color: #fff;
     }
 
     th, td {
-      padding: 12px 16px;
-      border: 1px solid #ccc;
-      text-align: left;
+      padding: 14px 16px;
     }
 
     th {
-      background-color: #ecf0f1;
+      text-align: left;
+      font-size: 14px;
+      letter-spacing: .5px;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #eee;
+      transition: background .2s;
+    }
+
+    tbody tr:hover {
+      background: #f8f9fa;
+    }
+
+    td:last-child {
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .harga {
+      text-align: right;
+      font-weight: 600;
       color: #2c3e50;
     }
 
-    .btn {
-      background-color: #3498db;
-      color: white;
-      padding: 8px 14px;
-      border: none;
+    .btn-edit {
+      background: #f1c40f;
+      color: #000;
+      padding: 6px 12px;
       border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
+      text-decoration: none;
+      font-size: 13px;
+      margin-right: 6px;
     }
 
-    .btn:hover {
-      background-color: #166ca5;
+    .btn-edit:hover {
+      background: #d4ac0d;
+    }
+
+    .btn-delete {
+      background: #e74c3c;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn-delete:hover {
+      background: #c0392b;
+    }
+
+    .footer-action {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 25px;
+    }
+
+    .btn-save {
+      background: #2ecc71;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .btn-save:hover {
+      background: #27ae60;
     }
 
     .back-link {
-      display: block;
-      text-align: center;
-      margin-top: 20px;
       color: #7f8c8d;
       text-decoration: none;
+      font-size: 14px;
     }
 
     .back-link:hover {
       text-decoration: underline;
     }
 
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 10;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.4);
-    }
-
-    .modal-content {
-      background-color: #fff;
-      margin: 15% auto;
-      padding: 20px;
-      border-radius: 10px;
-      width: 400px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 24px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .modal label {
-      display: block;
-      margin-top: 10px;
-    }
-
-    .modal input {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-
-    .modal button {
-      margin-top: 15px;
-      background-color: #2ecc71;
-      color: white;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .modal button:hover {
-      background-color: #27ae60;
+    @media (max-width: 600px) {
+      body { padding: 15px; }
+      th, td { font-size: 13px; }
     }
   </style>
 </head>
@@ -134,84 +139,55 @@
 
 <div class="container">
   <h2>Kelola Harga Pesanan</h2>
+<form method="POST" action="{{ route('admin.harga.store') }}" style="margin-bottom:20px; display:flex; gap:10px">
+  @csrf
+  <input type="text" name="layanan" placeholder="Jenis layanan" required style="flex:2;padding:8px">
+  <input type="number" name="hargaPerKg" placeholder="Harga / Kg" required style="flex:1;padding:8px">
+  <button class="btn-save">➕ Tambah</button>
+</form>
 
   <table>
     <thead>
       <tr>
         <th>Jenis Layanan</th>
-        <th>Harga per Kg</th>
-        <th>Aksi</th>
+        <th style="text-align:right">Harga / Kg</th>
+        <th style="text-align:center">Aksi</th>
       </tr>
     </thead>
+
     <tbody>
-      <tr>
-        <td>Cuci Kering</td>
-        <td id="harga-0">Rp 8.000</td>
-        <td><button class="btn" onclick="openModal(0, 'Cuci Kering', 8000)">Edit</button></td>
-      </tr>
-      <tr>
-        <td>Cuci Setrika</td>
-        <td id="harga-1">Rp 10.000</td>
-        <td><button class="btn" onclick="openModal(1, 'Cuci Setrika', 10000)">Edit</button></td>
-      </tr>
-      <tr>
-        <td>Setrika</td>
-        <td id="harga-2">Rp 7.000</td>
-        <td><button class="btn" onclick="openModal(2, 'Setrika', 7000)">Edit</button></td>
-      </tr>
-    </tbody>
+@foreach ($hargas as $harga)
+<tr>
+  <td>{{ $harga->layanan }}</td>
+
+  <td class="harga">
+    <form method="POST" action="{{ route('admin.harga.update', $harga->id) }}" style="display:flex; gap:5px; justify-content:flex-end">
+      @csrf
+      @method('PUT')
+      <input type="number" name="hargaPerKg"
+             value="{{ $harga->hargaPerKg }}"
+             style="width:120px;padding:5px">
+      <button class="btn-edit">💾</button>
+    </form>
+  </td>
+
+  <td>
+    <form action="{{ route('admin.harga.destroy', $harga->id) }}" method="POST">
+      @csrf
+      @method('DELETE')
+      <button class="btn-delete" onclick="return confirm('Hapus harga?')">🗑️</button>
+    </form>
+  </td>
+</tr>
+@endforeach
+</tbody>
+
   </table>
 
-  <a class="back-link" href="{{ route('admin.dashboard') }}">← Kembali ke Dashboard</a>
-</div>
-
-<!-- Modal -->
-<div id="editModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <h3>Edit Harga</h3>
-    <form onsubmit="saveHarga(event)">
-      <label for="jenis">Jenis Layanan:</label>
-      <input type="text" id="jenis" name="jenis" readonly>
-
-      <label for="harga">Harga per Kg:</label>
-      <input type="number" id="harga" name="harga" required>
-
-      <input type="hidden" id="rowIndex">
-
-      <button type="submit">Simpan</button>
-    </form>
+  <div class="footer-action">
+    <a href="{{ route('admin.dashboard') }}" class="back-link">← Kembali ke Dashboard</a>
   </div>
 </div>
-
-<script>
-  function openModal(index, jenis, harga) {
-    document.getElementById('editModal').style.display = 'block';
-    document.getElementById('jenis').value = jenis;
-    document.getElementById('harga').value = harga;
-    document.getElementById('rowIndex').value = index;
-  }
-
-  function closeModal() {
-    document.getElementById('editModal').style.display = 'none';
-  }
-
-  function saveHarga(event) {
-    event.preventDefault();
-    const index = document.getElementById('rowIndex').value;
-    const hargaBaru = document.getElementById('harga').value;
-    document.getElementById('harga-' + index).innerText = 'Rp ' + parseInt(hargaBaru).toLocaleString('id-ID');
-    closeModal();
-  }
-
-  // Menutup modal jika klik di luar modal
-  window.onclick = function(event) {
-    const modal = document.getElementById('editModal');
-    if (event.target === modal) {
-      closeModal();
-    }
-  };
-</script>
 
 </body>
 </html>

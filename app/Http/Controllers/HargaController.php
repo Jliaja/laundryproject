@@ -10,11 +10,11 @@ class HargaController extends Controller
     // Tampilkan semua harga
     public function harga()
     {
-        $hargaList = Harga::all();
-        return view('admin.harga', compact('hargaList'));
+        $hargas = Harga::all();
+        return view('admin.harga', compact('hargas'));
     }
 
-    // Tampilkan form tambah harga
+    // Form tambah harga
     public function create()
     {
         return view('admin.harga.create');
@@ -24,60 +24,45 @@ class HargaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'jenis_layanan' => 'required|string|max:255',
-            'hargaPerKg
-
-' => 'required|numeric|min:0',
+            'layanan' => 'required|string|max:255',
+            'hargaPerKg' => 'required|numeric|min:0',
         ]);
 
         Harga::create([
-            'jenis_layanan' => $request->jenis_layanan,
-            'hargaPerKg
-
-' => $request->hargaPerKg
-
-,
+            'layanan' => $request->layanan,
+            'hargaPerKg' => $request->hargaPerKg,
         ]);
 
         return redirect()->route('admin.harga')->with('success', 'Harga berhasil ditambahkan.');
     }
 
-    // Tampilkan form edit
+    // Form edit
     public function edit($id)
     {
         $harga = Harga::findOrFail($id);
         return view('admin.harga.edit', compact('harga'));
     }
 
-    // Simpan perubahan harga
+    // Update harga
     public function update(Request $request, $id)
-    {
-        $request->validate([
-            'jenis_layanan' => 'required|string|max:255',
-            'hargaPerKg
+{
+    $request->validate([
+        'hargaPerKg' => 'required|numeric|min:0',
+    ]);
 
-' => 'required|numeric|min:0',
-        ]);
+    $harga = Harga::findOrFail($id);
+    $harga->update([
+        'hargaPerKg' => $request->hargaPerKg,
+    ]);
 
-        $harga = Harga::findOrFail($id);
-        $harga->update([
-            'jenis_layanan' => $request->jenis_layanan,
-            'hargaPerKg
+    return redirect()->route('admin.harga')->with('success', 'Harga berhasil diperbarui.');
+}
 
-' => $request->hargaPerKg
-
-,
-        ]);
-
-        return redirect()->route('admin.harga.harga')->with('success', 'Harga berhasil diperbarui.');
-    }
 
     // Hapus harga
     public function destroy($id)
     {
-        $harga = Harga::findOrFail($id);
-        $harga->delete();
-
+        Harga::findOrFail($id)->delete();
         return redirect()->route('admin.harga')->with('success', 'Harga berhasil dihapus.');
     }
 }

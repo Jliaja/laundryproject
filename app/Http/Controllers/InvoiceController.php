@@ -1,22 +1,28 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Pesanan;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceController extends Controller
 {
     public function download($id)
     {
-        $pesanan = Pesanan::findOrFail($id);
+        $pesanan = Pesanan::with('user')->findOrFail($id);
 
-        if ($pesanan->status != 'selesai') {
-            return redirect()->back()->with('error', 'Invoice hanya bisa diunduh jika pesanan selesai.');
+        if (strtolower($pesanan->status) !== 'selesai') {
+            return response()->json([
+                'message' => 'Invoice hanya tersedia setelah pesanan selesai'
+            ], 403);
         }
 
-        $pdf = Pdf::loadView('user.downloadinvoice', compact('pesanan'));
-        return $pdf->download("invoice-pesanan-{$pesanan->id}.pdf");
+        $pdf = Pdf::loadView('user.downloadinvoice', [
+            'pesanan' => $pesanan
+        ]);
+
+        return $pdf->stream(
+            'invoice-' . $pesanan->id . '.pdf',
+            ['Content-Type' => 'application/pdf']
+        );
     }
 }
-
